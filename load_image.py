@@ -6,7 +6,6 @@ import datetime as dt
 import tkinter as tk
 from tkinter import filedialog
 from tkinter import messagebox
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import os
 
 # variável de cache
@@ -71,6 +70,9 @@ def _select_file():
     global _matrix_cache
     file_path = filedialog.askopenfilename()
     _matrix_cache = read_file(file_path)
+    _img_metadata['mode'] = _matrix_cache.mode
+    _img_metadata['name'] = os.path.basename(file_path)
+    _img_metadata['size'] = _matrix_cache.size
 
 
 # Carrega uma imagem
