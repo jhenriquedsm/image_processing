@@ -5,23 +5,38 @@ import pandas as pd
 import datetime as dt
 import tkinter as tk
 from tkinter import filedialog
+from tkinter import messagebox
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import os
 
 # variável de cache
 _matrix_cache = None
+_img_metadata = {'name': None, 'size': None, 'mode': None}
+_root = None
 
-def plot(data):
-    plt.figure(figsize=(6, 4))
+def plot(data, widget):
+    global _img_metadata
+    #subroot = tk.Toplevel(widget)
+    #subroot.protocol("WM_DELETE_WINDOW", subroot.destroy)
+    #subroot.title(f'Name: {_img_metadata["name"]} Mode: {_img_metadata["mode"]} Size: {_img_metadata["size"]}')
     plt.imshow(data, aspect='auto')
     plt.axis('off')
+    fig = plt.gcf()
+    #canvas = FigureCanvasTkAgg(fig, master=subroot)
+    #canvas.draw()
+    #canvas.get_tk_widget().pack()
+    #subroot.mainloop()
     plt.show()
 
 
 # Seleciona uma imagem do computador
 def _select_image():
-    global _matrix_cache
+    global _matrix_cache, _img_metadata
     img_path = filedialog.askopenfilename()
     _matrix_cache = load_img(img_path)
+    _img_metadata['mode'] = _matrix_cache.mode
+    _img_metadata['name'] = os.path.basename(img_path)
+    _img_metadata['size'] = _matrix_cache.size
 
 
 # Carrega arquivo .csv
@@ -30,7 +45,7 @@ def _to_csv():
     if not _matrix_cache == None:
         matrix = img_to_matrix(_matrix_cache)
         matrix_to_csv(matrix)
-    else: print('Nenhuma imagem foi carregada!')
+    else: messagebox.showinfo('Info', 'Nenhuma imagem foi carregada!')
 
 
 # carrega arquivo .xlsx
@@ -39,23 +54,24 @@ def _to_excel():
     if not _matrix_cache == None:
         matrix = img_to_matrix(_matrix_cache)
         matrix_to_excel(matrix)
-    else: print('Nenhuma imagem foi carregada!')
+    else: messagebox.showinfo('Info', 'Nenhuma imagem foi carregada!')
 
 
 # Limpa a variável global de cache
 def _clean_cache():
     global _matrix_cache
     _matrix_cache = None
-    print('Cache excluído com sucesso!')
+    messagebox.showinfo('Info', 'Cache excluído com sucesso!')
 
 
 # Plota a imagem
 def _show_img():
     global _matrix_cache
+    global _root
     print(_matrix_cache)
     if not _matrix_cache == None:
-        plot(_matrix_cache)
-    else: print('Nenhuma imagem foi carregada!')
+        plot(_matrix_cache, _root)
+    else: messagebox.showinfo('Info', 'Nenhuma imagem foi carregada!')
 
 
 # Seleciona um arquivo do computador
@@ -70,10 +86,10 @@ def load_img(path):
     try:
         img = Image.open(path)
     except Exception as e:
-        print(f'Falha ao carregar imagem:\nERRO: {e}\nO arquivo selecionado não é compativel')
+        messagebox.showerror('Erro', f'Falha ao carregar imagem:\nERRO: {e}\nO arquivo selecionado não é compativel')
         return None
 
-    print('Imagem carregada com sucesso!')
+    messagebox.showinfo('Info', 'Imagem carregada com sucesso!')
     return img
 
 
@@ -110,9 +126,9 @@ def matrix_to_excel(matrix):
     try:
         df = pd.DataFrame(matrix)
         df.to_excel(f'matrizes/Matrix-{dt.date.today()}-{time}.xlsx', header=False, index=False)
-        print(f'Arquivo Matrix-{dt.date.today()}-{time}.xlsx criado com sucesso!')
+        messagebox.showinfo('Info', f'Arquivo Matrix-{dt.date.today()}-{time}.xlsx criado com sucesso!')
     except Exception as e:
-        print(f'Erro ao escrever arquivo.\nErro: {e}')
+        messagebox.showerror('Erro', f'Erro ao escrever arquivo.\nErro: {e}')
 
 
 # Escreve matriz em um arquivo .csv
@@ -123,22 +139,21 @@ def matrix_to_csv(matrix):
     try:
         df = pd.DataFrame(matrix)
         df.to_csv(f'matrizes/Matrix-{dt.date.today()}-{time}.csv', header=False, index=False)
-        print(f'Arquivo Matrix-{dt.date.today()}-{time}.csv criado com sucesso!')
+        messagebox.showinfo('Info', f'Arquivo Matrix-{dt.date.today()}-{time}.csv criado com sucesso!')
     except Exception as e:
-        print(f'Erro ao escrever arquivo.\nErro: {e}')
+        messagebox.showerror('Erro', f'Erro ao escrever arquivo.\nErro: {e}')
 
 # Lê arquivo de matrz em .xlsx ou .csv 
 def read_file(path):
     filename = os.path.basename(path)
     if '.csv' in path:
         df = pd.read_csv(path, header=None, dtype=str)
-        print(f'Arquivo {filename} carregado com sucesso!')
     elif '.xlsx' in path:
-        df = pd.read_excel(path, header=None, dtype=str)
-        print(f'Arquivo {filename} carregado com sucesso!')
+        df = pd.read_excel(path, header=None, dtype=str)   
     else: 
-        print(f'O arquivo "{path}" não é suportado')
+        messagebox.showinfo('Info', f'O arquivo "{filename}" não é suportado')
         return None
+    messagebox.showinfo('Info', f'Arquivo {filename} carregado com sucesso!')
 
     # Obter as dimensões da imagem do DataFrame
     height, width = df.shape
@@ -164,37 +179,39 @@ def read_file(path):
 
 
 def main():
+    global _root
     # Criar a janela principal
-    root = tk.Tk()
-    root.title('Image Loader')
-    root.geometry("300x280")
+    _root = tk.Tk()
+    _root.title('Image Loader')
+    _root.geometry("300x280")
+    _root.protocol('WM_DELETE_WINDOW', quit)
 
     # Botão para selecionar uma imagem
-    select_img_btn = tk.Button(root, text="Carregar Imagem", command=_select_image)
+    select_img_btn = tk.Button(_root, text="Carregar Imagem", command=_select_image)
     select_img_btn.pack(pady=10)
 
     # Botão para selecionar um arquivo .csv ou .xlsx
-    select_file_btn = tk.Button(root, text='Carregar arquivo', command=_select_file)
+    select_file_btn = tk.Button(_root, text='Carregar arquivo', command=_select_file)
     select_file_btn.pack(pady=10)
 
     # Botão para salvar matriz em arquivo .csv
-    save_csv_btn = tk.Button(root, text='Salvar CSV', command=_to_csv)
+    save_csv_btn = tk.Button(_root, text='Salvar CSV', command=_to_csv)
     save_csv_btn.pack(pady=10)
 
     # Botão para salvar matriz em arquivo .xlsx
-    save_excel_btn = tk.Button(root, text='Salvar XLSX', command=_to_excel)
+    save_excel_btn = tk.Button(_root, text='Salvar XLSX', command=_to_excel)
     save_excel_btn.pack(pady=10)
 
     # Botaão para limpar cache
-    cls_cache_btn = tk.Button(root, text='Excluir cache', command=_clean_cache)
+    cls_cache_btn = tk.Button(_root, text='Excluir cache', command=_clean_cache)
     cls_cache_btn.pack(pady=10)
 
     # Botão de visualização de imagem
-    show_img_btn = tk.Button(root, text='Visualizar imagem', command=_show_img)
+    show_img_btn = tk.Button(_root, text='Visualizar imagem', command=_show_img)
     show_img_btn.pack(pady=10)
 
     # Executa o loop principal da interface gráfica
-    root.mainloop()
+    _root.mainloop()
 
 if __name__ == '__main__':
     main()
