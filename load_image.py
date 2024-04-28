@@ -12,20 +12,13 @@ import os
 # variável de cache
 _matrix_cache = None
 _img_metadata = {'name': None, 'size': None, 'mode': None}
-_root = None
 
-def plot(data, widget):
+def plot(data):
     global _img_metadata
-    #subroot = tk.Toplevel(widget)
-    #subroot.protocol("WM_DELETE_WINDOW", subroot.destroy)
-    #subroot.title(f'Name: {_img_metadata["name"]} Mode: {_img_metadata["mode"]} Size: {_img_metadata["size"]}')
     plt.imshow(data, aspect='auto')
     plt.axis('off')
     fig = plt.gcf()
-    #canvas = FigureCanvasTkAgg(fig, master=subroot)
-    #canvas.draw()
-    #canvas.get_tk_widget().pack()
-    #subroot.mainloop()
+    fig.canvas.manager.set_window_title(f'Name: {_img_metadata["name"]} Mode: {_img_metadata["mode"]} Size: {_img_metadata["size"]}')
     plt.show()
 
 
@@ -67,10 +60,9 @@ def _clean_cache():
 # Plota a imagem
 def _show_img():
     global _matrix_cache
-    global _root
     print(_matrix_cache)
     if not _matrix_cache == None:
-        plot(_matrix_cache, _root)
+        plot(_matrix_cache)
     else: messagebox.showinfo('Info', 'Nenhuma imagem foi carregada!')
 
 
@@ -179,39 +171,38 @@ def read_file(path):
 
 
 def main():
-    global _root
     # Criar a janela principal
-    _root = tk.Tk()
-    _root.title('Image Loader')
-    _root.geometry("300x280")
-    _root.protocol('WM_DELETE_WINDOW', quit)
+    root = tk.Tk()
+    root.title('Image Loader')
+    root.geometry("300x280")
+    root.protocol('WM_DELETE_WINDOW', quit)
 
     # Botão para selecionar uma imagem
-    select_img_btn = tk.Button(_root, text="Carregar Imagem", command=_select_image)
+    select_img_btn = tk.Button(root, text="Carregar Imagem", command=_select_image)
     select_img_btn.pack(pady=10)
 
     # Botão para selecionar um arquivo .csv ou .xlsx
-    select_file_btn = tk.Button(_root, text='Carregar arquivo', command=_select_file)
+    select_file_btn = tk.Button(root, text='Carregar arquivo', command=_select_file)
     select_file_btn.pack(pady=10)
 
     # Botão para salvar matriz em arquivo .csv
-    save_csv_btn = tk.Button(_root, text='Salvar CSV', command=_to_csv)
+    save_csv_btn = tk.Button(root, text='Salvar CSV', command=_to_csv)
     save_csv_btn.pack(pady=10)
 
     # Botão para salvar matriz em arquivo .xlsx
-    save_excel_btn = tk.Button(_root, text='Salvar XLSX', command=_to_excel)
+    save_excel_btn = tk.Button(root, text='Salvar XLSX', command=_to_excel)
     save_excel_btn.pack(pady=10)
 
     # Botaão para limpar cache
-    cls_cache_btn = tk.Button(_root, text='Excluir cache', command=_clean_cache)
+    cls_cache_btn = tk.Button(root, text='Excluir cache', command=_clean_cache)
     cls_cache_btn.pack(pady=10)
 
     # Botão de visualização de imagem
-    show_img_btn = tk.Button(_root, text='Visualizar imagem', command=_show_img)
+    show_img_btn = tk.Button(root, text='Visualizar imagem', command=_show_img)
     show_img_btn.pack(pady=10)
 
     # Executa o loop principal da interface gráfica
-    _root.mainloop()
+    root.mainloop()
 
 if __name__ == '__main__':
     main()
