@@ -211,7 +211,7 @@ def verify_color(pixel):
         channel = 4
     else: channel = 3
 
-    color_matrix = np.ones((3, 3, channel), dtype=np.uint8)
+    color_matrix = np.zeros((3, 3, channel), dtype=np.uint8)
     pixel = list(map(int, pixel.split(',')))
 
     for i in range(3):
@@ -221,9 +221,6 @@ def verify_color(pixel):
     color_matrix = Image.fromarray(color_matrix)
 
     plot(color_matrix)
-    #plt.imshow(color_matrix, aspect='auto')
-    #plt.axis('off')
-    #plt.show()
 
 
 def main():
