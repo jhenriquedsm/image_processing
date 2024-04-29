@@ -65,7 +65,8 @@ def _show_img():
     else: messagebox.showinfo('Info', 'Nenhuma imagem foi carregada!')
 
 
-# Informando a posição do pixel, mostrará a cor do pixel (Atualmente quebrado)
+# Informando a posição do pixel, mostrará a cor do pixel (Funcional)
+# Interface gráfica está quebrada
 def _show_pixel():
     #subroot = tk.Tk()
     #subroot.title('Pixel Picker')
@@ -203,23 +204,26 @@ def get_pixel(width=0, height=0):
     return _matrix_cache[width][height]
 
 
+# Faz a análise do pixel e mostra sua respectiva cor
 def verify_color(pixel):
     global _img_metadata
     if _img_metadata['mode'].lower() == 'rgba':
-        color_matrix = np.ones(3, 4)
-    else:
-        color_matrix = np.ones((3, 3))
-    
+        channel = 4
+    else: channel = 3
+
+    color_matrix = np.ones((3, 3, channel), dtype=np.uint8)
     pixel = list(map(int, pixel.split(',')))
-    
-    for i in range(0, len(color_matrix)):
-            color_matrix[i] = pixel
+
+    for i in range(3):
+        for j in range(3):
+            color_matrix[i, j] = pixel
 
     color_matrix = Image.fromarray(color_matrix)
 
-    plt.imshow(color_matrix, aspect='auto')
-    plt.axis('off')
-    plt.show()
+    plot()
+    #plt.imshow(color_matrix, aspect='auto')
+    #plt.axis('off')
+    #plt.show()
 
 
 def main():
