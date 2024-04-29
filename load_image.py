@@ -220,7 +220,7 @@ def verify_color(pixel):
 
     color_matrix = Image.fromarray(color_matrix)
 
-    plot()
+    plot(color_matrix)
     #plt.imshow(color_matrix, aspect='auto')
     #plt.axis('off')
     #plt.show()
