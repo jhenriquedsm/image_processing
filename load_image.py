@@ -65,6 +65,26 @@ def _show_img():
     else: messagebox.showinfo('Info', 'Nenhuma imagem foi carregada!')
 
 
+# Informando a posição do pixel, mostrará a cor do pixel (Atualmente quebrado)
+def _show_pixel():
+    subroot = tk.Tk()
+    subroot.title('Pixel Picker')
+    subroot.geometry("200x130")
+    subroot.protocol('WM_DELETE_WINDOW', subroot.destroy)
+    
+    in_x = tk.Entry(subroot)
+    in_x.pack(pady=10)
+    in_y = tk.Entry(subroot)
+    in_y.pack(pady=10)
+    ok_btn = tk.Button(subroot, text='OK')
+    ok_btn.pack(pady=10)
+    
+    pixel = get_pixel(in_x.get(), in_y.get())
+    verify_color(pixel)
+    
+    subroot.mainloop()
+
+
 # Seleciona um arquivo do computador
 def _select_file():
     global _matrix_cache
@@ -172,11 +192,30 @@ def read_file(path):
     return reconstructed_img
 
 
+# Pega o valor de um pixel em uma matriz
+def get_pixel(width=0, height=0):
+    global _matrix_cache
+    
+    # Verifica se está em formato de imagem do PIL
+    if 'PIL' in str(type(_matrix_cache)):
+        _matrix_cache = img_to_matrix(_matrix_cache)
+
+    return _matrix_cache[width][height]
+
+
+def verify_color(pixel):
+    color_matrix = np.array(3, 4)
+    color_matrix *= pixel
+    plt.imshow(color_matrix, aspect='auto')
+    plt.axis('off')
+    plt.show()
+
+
 def main():
     # Criar a janela principal
     root = tk.Tk()
     root.title('Image Loader')
-    root.geometry("300x280")
+    root.geometry("300x320")
     root.protocol('WM_DELETE_WINDOW', quit)
 
     # Botão para selecionar uma imagem
@@ -202,6 +241,10 @@ def main():
     # Botão de visualização de imagem
     show_img_btn = tk.Button(root, text='Visualizar imagem', command=_show_img)
     show_img_btn.pack(pady=10)
+
+    # Botão de visualização de imagem
+    show_color_btn = tk.Button(root, text='Visualizar pixel', command=_show_pixel)
+    show_color_btn.pack(pady=10)
 
     # Executa o loop principal da interface gráfica
     root.mainloop()
