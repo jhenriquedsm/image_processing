@@ -65,24 +65,25 @@ def _show_img():
     else: messagebox.showinfo('Info', 'Nenhuma imagem foi carregada!')
 
 
-# Informando a posição do pixel, mostrará a cor do pixel (Atualmente quebrado)
+# Informando a posição do pixel, mostrará a cor do pixel (Funcional)
+# Interface gráfica está quebrada
 def _show_pixel():
-    subroot = tk.Tk()
-    subroot.title('Pixel Picker')
-    subroot.geometry("200x130")
-    subroot.protocol('WM_DELETE_WINDOW', subroot.destroy)
+    #subroot = tk.Tk()
+    #subroot.title('Pixel Picker')
+    #subroot.geometry("200x130")
+    #subroot.protocol('WM_DELETE_WINDOW', subroot.destroy)
     
-    in_x = tk.Entry(subroot)
-    in_x.pack(pady=10)
-    in_y = tk.Entry(subroot)
-    in_y.pack(pady=10)
-    ok_btn = tk.Button(subroot, text='OK')
-    ok_btn.pack(pady=10)
+    in_x = input('Width: ') #tk.Entry(subroot)
+    #in_x.pack(pady=10)
+    in_y = input('Height: ') #tk.Entry(subroot)
+    #in_y.pack(pady=10)
+    #ok_btn = tk.Button(subroot, text='OK')
+    #ok_btn.pack(pady=10)
     
-    pixel = get_pixel(in_x.get(), in_y.get())
+    pixel = get_pixel(int(in_x), int(in_y))
     verify_color(pixel)
     
-    subroot.mainloop()
+    #subroot.mainloop()
 
 
 # Seleciona um arquivo do computador
@@ -199,16 +200,27 @@ def get_pixel(width=0, height=0):
     # Verifica se está em formato de imagem do PIL
     if 'PIL' in str(type(_matrix_cache)):
         _matrix_cache = img_to_matrix(_matrix_cache)
-
+    
     return _matrix_cache[width][height]
 
 
+# Faz a análise do pixel e mostra sua respectiva cor
 def verify_color(pixel):
-    color_matrix = np.array(3, 4)
-    color_matrix *= pixel
-    plt.imshow(color_matrix, aspect='auto')
-    plt.axis('off')
-    plt.show()
+    global _img_metadata
+    if _img_metadata['mode'].lower() == 'rgba':
+        channel = 4
+    else: channel = 3
+
+    color_matrix = np.zeros((3, 3, channel), dtype=np.uint8)
+    pixel = list(map(int, pixel.split(',')))
+
+    for i in range(3):
+        for j in range(3):
+            color_matrix[i, j] = pixel
+
+    color_matrix = Image.fromarray(color_matrix)
+
+    plot(color_matrix)
 
 
 def main():
