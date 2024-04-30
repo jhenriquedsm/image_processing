@@ -5,23 +5,30 @@ import pandas as pd
 import datetime as dt
 import tkinter as tk
 from tkinter import filedialog
+from tkinter import messagebox
 import os
 
 # variável de cache
 _matrix_cache = None
+_img_metadata = {'name': None, 'size': None, 'mode': None}
 
 def plot(data):
-    plt.figure(figsize=(6, 4))
+    global _img_metadata
     plt.imshow(data, aspect='auto')
     plt.axis('off')
+    fig = plt.gcf()
+    fig.canvas.manager.set_window_title(f'Name: {_img_metadata["name"]} Mode: {_img_metadata["mode"]} Size: {_img_metadata["size"]}')
     plt.show()
 
 
 # Seleciona uma imagem do computador
 def _select_image():
-    global _matrix_cache
+    global _matrix_cache, _img_metadata
     img_path = filedialog.askopenfilename()
     _matrix_cache = load_img(img_path)
+    _img_metadata['mode'] = _matrix_cache.mode
+    _img_metadata['name'] = os.path.basename(img_path)
+    _img_metadata['size'] = _matrix_cache.size
 
 
 # Carrega arquivo .csv
@@ -30,7 +37,7 @@ def _to_csv():
     if not _matrix_cache == None:
         matrix = img_to_matrix(_matrix_cache)
         matrix_to_csv(matrix)
-    else: print('Nenhuma imagem foi carregada!')
+    else: messagebox.showinfo('Info', 'Nenhuma imagem foi carregada!')
 
 
 # carrega arquivo .xlsx
@@ -39,14 +46,14 @@ def _to_excel():
     if not _matrix_cache == None:
         matrix = img_to_matrix(_matrix_cache)
         matrix_to_excel(matrix)
-    else: print('Nenhuma imagem foi carregada!')
+    else: messagebox.showinfo('Info', 'Nenhuma imagem foi carregada!')
 
 
 # Limpa a variável global de cache
 def _clean_cache():
     global _matrix_cache
     _matrix_cache = None
-    print('Cache excluído com sucesso!')
+    messagebox.showinfo('Info', 'Cache excluído com sucesso!')
 
 
 # Plota a imagem
@@ -55,7 +62,28 @@ def _show_img():
     print(_matrix_cache)
     if not _matrix_cache == None:
         plot(_matrix_cache)
-    else: print('Nenhuma imagem foi carregada!')
+    else: messagebox.showinfo('Info', 'Nenhuma imagem foi carregada!')
+
+
+# Informando a posição do pixel, mostrará a cor do pixel (Funcional)
+# Interface gráfica está quebrada
+def _show_pixel():
+    #subroot = tk.Tk()
+    #subroot.title('Pixel Picker')
+    #subroot.geometry("200x130")
+    #subroot.protocol('WM_DELETE_WINDOW', subroot.destroy)
+    
+    in_x = input('Width: ') #tk.Entry(subroot)
+    #in_x.pack(pady=10)
+    in_y = input('Height: ') #tk.Entry(subroot)
+    #in_y.pack(pady=10)
+    #ok_btn = tk.Button(subroot, text='OK')
+    #ok_btn.pack(pady=10)
+    
+    pixel = get_pixel(int(in_x), int(in_y))
+    verify_color(pixel)
+    
+    #subroot.mainloop()
 
 
 # Seleciona um arquivo do computador
@@ -63,6 +91,9 @@ def _select_file():
     global _matrix_cache
     file_path = filedialog.askopenfilename()
     _matrix_cache = read_file(file_path)
+    _img_metadata['mode'] = _matrix_cache.mode
+    _img_metadata['name'] = os.path.basename(file_path)
+    _img_metadata['size'] = _matrix_cache.size
 
 
 # Carrega uma imagem
@@ -70,10 +101,10 @@ def load_img(path):
     try:
         img = Image.open(path)
     except Exception as e:
-        print(f'Falha ao carregar imagem:\nERRO: {e}\nO arquivo selecionado não é compativel')
+        messagebox.showerror('Erro', f'Falha ao carregar imagem:\nERRO: {e}\nO arquivo selecionado não é compativel')
         return None
 
-    print('Imagem carregada com sucesso!')
+    messagebox.showinfo('Info', 'Imagem carregada com sucesso!')
     return img
 
 
@@ -110,9 +141,9 @@ def matrix_to_excel(matrix):
     try:
         df = pd.DataFrame(matrix)
         df.to_excel(f'matrizes/Matrix-{dt.date.today()}-{time}.xlsx', header=False, index=False)
-        print(f'Arquivo Matrix-{dt.date.today()}-{time}.xlsx criado com sucesso!')
+        messagebox.showinfo('Info', f'Arquivo Matrix-{dt.date.today()}-{time}.xlsx criado com sucesso!')
     except Exception as e:
-        print(f'Erro ao escrever arquivo.\nErro: {e}')
+        messagebox.showerror('Erro', f'Erro ao escrever arquivo.\nErro: {e}')
 
 
 # Escreve matriz em um arquivo .csv
@@ -123,22 +154,21 @@ def matrix_to_csv(matrix):
     try:
         df = pd.DataFrame(matrix)
         df.to_csv(f'matrizes/Matrix-{dt.date.today()}-{time}.csv', header=False, index=False)
-        print(f'Arquivo Matrix-{dt.date.today()}-{time}.csv criado com sucesso!')
+        messagebox.showinfo('Info', f'Arquivo Matrix-{dt.date.today()}-{time}.csv criado com sucesso!')
     except Exception as e:
-        print(f'Erro ao escrever arquivo.\nErro: {e}')
+        messagebox.showerror('Erro', f'Erro ao escrever arquivo.\nErro: {e}')
 
 # Lê arquivo de matrz em .xlsx ou .csv 
 def read_file(path):
     filename = os.path.basename(path)
     if '.csv' in path:
         df = pd.read_csv(path, header=None, dtype=str)
-        print(f'Arquivo {filename} carregado com sucesso!')
     elif '.xlsx' in path:
-        df = pd.read_excel(path, header=None, dtype=str)
-        print(f'Arquivo {filename} carregado com sucesso!')
+        df = pd.read_excel(path, header=None, dtype=str)   
     else: 
-        print(f'O arquivo "{path}" não é suportado')
+        messagebox.showinfo('Info', f'O arquivo "{filename}" não é suportado')
         return None
+    messagebox.showinfo('Info', f'Arquivo {filename} carregado com sucesso!')
 
     # Obter as dimensões da imagem do DataFrame
     height, width = df.shape
@@ -163,11 +193,42 @@ def read_file(path):
     return reconstructed_img
 
 
+# Pega o valor de um pixel em uma matriz
+def get_pixel(width=0, height=0):
+    global _matrix_cache
+    
+    # Verifica se está em formato de imagem do PIL
+    if 'PIL' in str(type(_matrix_cache)):
+        _matrix_cache = img_to_matrix(_matrix_cache)
+    
+    return _matrix_cache[width][height]
+
+
+# Faz a análise do pixel e mostra sua respectiva cor
+def verify_color(pixel):
+    global _img_metadata
+    if _img_metadata['mode'].lower() == 'rgba':
+        channel = 4
+    else: channel = 3
+
+    color_matrix = np.zeros((3, 3, channel), dtype=np.uint8)
+    pixel = list(map(int, pixel.split(',')))
+
+    for i in range(3):
+        for j in range(3):
+            color_matrix[i, j] = pixel
+
+    color_matrix = Image.fromarray(color_matrix)
+
+    plot(color_matrix)
+
+
 def main():
     # Criar a janela principal
     root = tk.Tk()
     root.title('Image Loader')
-    root.geometry("300x280")
+    root.geometry("300x320")
+    root.protocol('WM_DELETE_WINDOW', quit)
 
     # Botão para selecionar uma imagem
     select_img_btn = tk.Button(root, text="Carregar Imagem", command=_select_image)
@@ -192,6 +253,10 @@ def main():
     # Botão de visualização de imagem
     show_img_btn = tk.Button(root, text='Visualizar imagem', command=_show_img)
     show_img_btn.pack(pady=10)
+
+    # Botão de visualização de imagem
+    show_color_btn = tk.Button(root, text='Visualizar pixel', command=_show_pixel)
+    show_color_btn.pack(pady=10)
 
     # Executa o loop principal da interface gráfica
     root.mainloop()
