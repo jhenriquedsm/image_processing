@@ -11,6 +11,7 @@ import os
 # variável de cache
 _matrix_cache = None
 _img_metadata = {'name': None, 'size': None, 'mode': None}
+_control = []
 
 def plot(data):
     global _img_metadata
@@ -68,22 +69,36 @@ def _show_img():
 # Informando a posição do pixel, mostrará a cor do pixel (Funcional)
 # Interface gráfica está quebrada
 def _show_pixel():
-    #subroot = tk.Tk()
-    #subroot.title('Pixel Picker')
-    #subroot.geometry("200x130")
-    #subroot.protocol('WM_DELETE_WINDOW', subroot.destroy)
+    global _matrix_cache
+
+    def _fun_ok():
+        global _Control
+        _Control = True
+
+    def _():
+        global _control
+        print('passou!')
+        pixel = get_pixel(int(x.get()), int(y.get()))
+        verify_color(pixel)
+
+    if _matrix_cache != None:
+        subroot = tk.Tk()
+        subroot.title('Pixel Picker')
+        subroot.geometry("200x130")
+        subroot.protocol('WM_DELETE_WINDOW', subroot.destroy)
+        tk.Label(subroot, text='Width:').pack()
+        in_x = tk.Entry(subroot).pack() #input('Width: ')
+        tk.Label(subroot, text='Height:').pack()
+        in_y = tk.Entry(subroot).pack() #input('Height: ')
+        tk.Button(subroot, text='OK', command=_fun_ok).pack(pady=10)
+        print(f'.{in_x.get()}.')
+
+        subroot.mainloop()
+
+        _(in_x, in_y)
+    else:
+        messagebox.showinfo('Info', 'Nenhuma imagem foi carregada!')
     
-    in_x = input('Width: ') #tk.Entry(subroot)
-    #in_x.pack(pady=10)
-    in_y = input('Height: ') #tk.Entry(subroot)
-    #in_y.pack(pady=10)
-    #ok_btn = tk.Button(subroot, text='OK')
-    #ok_btn.pack(pady=10)
-    
-    pixel = get_pixel(int(in_x), int(in_y))
-    verify_color(pixel)
-    
-    #subroot.mainloop()
 
 
 # Seleciona um arquivo do computador
@@ -231,32 +246,25 @@ def main():
     root.protocol('WM_DELETE_WINDOW', quit)
 
     # Botão para selecionar uma imagem
-    select_img_btn = tk.Button(root, text="Carregar Imagem", command=_select_image)
-    select_img_btn.pack(pady=10)
+    tk.Button(root, text="Carregar Imagem", command=_select_image).pack(pady=10)
 
     # Botão para selecionar um arquivo .csv ou .xlsx
-    select_file_btn = tk.Button(root, text='Carregar arquivo', command=_select_file)
-    select_file_btn.pack(pady=10)
+    tk.Button(root, text='Carregar arquivo', command=_select_file).pack(pady=10)
 
     # Botão para salvar matriz em arquivo .csv
-    save_csv_btn = tk.Button(root, text='Salvar CSV', command=_to_csv)
-    save_csv_btn.pack(pady=10)
+    tk.Button(root, text='Salvar CSV', command=_to_csv).pack(pady=10)
 
     # Botão para salvar matriz em arquivo .xlsx
-    save_excel_btn = tk.Button(root, text='Salvar XLSX', command=_to_excel)
-    save_excel_btn.pack(pady=10)
+    tk.Button(root, text='Salvar XLSX', command=_to_excel).pack(pady=10)
 
     # Botaão para limpar cache
-    cls_cache_btn = tk.Button(root, text='Excluir cache', command=_clean_cache)
-    cls_cache_btn.pack(pady=10)
+    tk.Button(root, text='Excluir cache', command=_clean_cache).pack(pady=10)
 
     # Botão de visualização de imagem
-    show_img_btn = tk.Button(root, text='Visualizar imagem', command=_show_img)
-    show_img_btn.pack(pady=10)
+    tk.Button(root, text='Visualizar imagem', command=_show_img).pack(pady=10)
 
     # Botão de visualização de imagem
-    show_color_btn = tk.Button(root, text='Visualizar pixel', command=_show_pixel)
-    show_color_btn.pack(pady=10)
+    tk.Button(root, text='Visualizar pixel', command=_show_pixel).pack(pady=10)
 
     # Executa o loop principal da interface gráfica
     root.mainloop()
