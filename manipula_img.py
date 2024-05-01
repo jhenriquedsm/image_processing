@@ -3,12 +3,16 @@ from tkinter import messagebox
 from PIL import Image
 import numpy as np
 
-def plot(data):
-    global _img_metadata
-    plt.imshow(data, aspect='auto')
+# Mostra a imagem
+def plot(data, metadata='Figure'):
+    if metadata != 'Figure':
+        title = f'Name: {metadata["name"]} Mode: {metadata["mode"]} Size: {metadata["size"]}'
+    else: title = metadata
+
+    plt.imshow(data)
     plt.axis('off')
     fig = plt.gcf()
-    fig.canvas.manager.set_window_title(f'Name: {_img_metadata["name"]} Mode: {_img_metadata["mode"]} Size: {_img_metadata["size"]}')
+    fig.canvas.manager.set_window_title(title)
     plt.show()
 
 
@@ -37,7 +41,7 @@ def img_to_matrix(img):
     return pixel_data
 
 
-    # Carrega uma imagem
+# Carrega uma imagem
 def load_img(path):
     try:
         img = Image.open(path)
@@ -49,20 +53,18 @@ def load_img(path):
     return img
 
 # Pega o valor de um pixel em uma matriz
-def get_pixel(width=0, height=0):
-    global _matrix_cache
+def get_pixel(matrix, x=0, y=0):
     
     # Verifica se está em formato de imagem do PIL
-    if 'PIL' in str(type(_matrix_cache)):
-        _matrix_cache = img_to_matrix(_matrix_cache)
+    if 'PIL' in str(type(matrix)):
+        matrix = img_to_matrix(matrix)
     
-    return _matrix_cache[width][height]
+    return matrix[y][x]
 
 
 # Faz a análise do pixel e mostra sua respectiva cor
-def verify_color(pixel):
-    global _img_metadata
-    if _img_metadata['mode'].lower() == 'rgba':
+def verify_color(pixel, metadata):
+    if metadata['mode'].lower() == 'rgba':
         channel = 4
     else: channel = 3
 

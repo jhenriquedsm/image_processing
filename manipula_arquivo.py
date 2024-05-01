@@ -3,16 +3,18 @@ from tkinter import messagebox
 import datetime as dt
 import numpy as np
 from PIL import Image
+from tkinter import filedialog
 import os
 
 # Escreve matriz em um arquivo .xlsx
 def matrix_to_excel(matrix):
+    path = filedialog.askdirectory()
     print('Isso Pode demorar um pouco...')
     time = dt.datetime.now()
     time = f'{time.hour}{time.minute}{time.second}'
     try:
         df = pd.DataFrame(matrix)
-        df.to_excel(f'matrizes/Matrix-{dt.date.today()}-{time}.xlsx', header=False, index=False)
+        df.to_excel(f'{path}/Matrix-{dt.date.today()}-{time}.xlsx', header=False, index=False)
         messagebox.showinfo('Info', f'Arquivo Matrix-{dt.date.today()}-{time}.xlsx criado com sucesso!')
     except Exception as e:
         messagebox.showerror('Erro', f'Erro ao escrever arquivo.\nErro: {e}')
@@ -20,12 +22,13 @@ def matrix_to_excel(matrix):
 
 # Escreve matriz em um arquivo .csv
 def matrix_to_csv(matrix):
+    path = filedialog.askdirectory()
     print('Isso Pode demorar um pouco...')
     time = dt.datetime.now()
     time = f'{time.hour}{time.minute}{time.second}'
     try:
         df = pd.DataFrame(matrix)
-        df.to_csv(f'matrizes/Matrix-{dt.date.today()}-{time}.csv', header=False, index=False)
+        df.to_csv(f'{path}/Matrix-{dt.date.today()}-{time}.csv', header=False, index=False)
         messagebox.showinfo('Info', f'Arquivo Matrix-{dt.date.today()}-{time}.csv criado com sucesso!')
     except Exception as e:
         messagebox.showerror('Erro', f'Erro ao escrever arquivo.\nErro: {e}')
