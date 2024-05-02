@@ -44,11 +44,28 @@ class menu:
     # Informando a posição do pixel, mostrará a cor do pixel
     def _show_pixel(self):
         global _matrix_cache, _img_metadata
-
+        self.pixel = {'original': None, 'new': None}
         def _():
-            pixel = mi.get_pixel(_matrix_cache, int(self.in_x.get()), int(self.in_y.get()))
-            mi.verify_color(pixel, _img_metadata)
+            self.pixel['original'] = mi.get_pixel(_matrix_cache, int(self.in_x.get()), int(self.in_y.get()))
+            if self.pixel['original'] != None:
+                subroot.geometry('200x190')
+                tk.Button(subroot, text='Mudar a cor', command=_mod_color).pack(pady=5)
+                mi.verify_color(self.pixel['original'], _img_metadata)
 
+        def _mod_color():
+            self.pixel['new'] = mi.set_color()
+            if self.pixel['new'] != None:
+                subroot.geometry('200x230')
+                tk.Button(subroot, text='Modificar todos os pixels iguais', command=_aply_to_img).pack(pady=5)
+                mi.verify_color(self.pixel['new'], _img_metadata)
+
+        def _aply_to_img():
+            global _matrix_cache
+            _matrix_cache = mi.change_img_color(_matrix_cache, self.pixel['original'], self.pixel['new'])
+            mi.plot(_matrix_cache, _img_metadata)
+            subroot.destroy()
+
+        # Cria um submenu para inserir os pixels
         if _matrix_cache != None:
             subroot = tk.Toplevel(self.master)
             subroot.title('Pixel Picker')
@@ -61,10 +78,8 @@ class menu:
             self.in_y = tk.Entry(subroot)
             self.in_y.pack(pady=5)
             tk.Button(subroot, text='OK', command=_).pack(pady=5)
-
         else:
-            messagebox.showinfo('Info', 'Nenhuma imagem foi carregada!')
-    
+            messagebox.showinfo('Info', 'Nenhuma imagem foi carregada!')  
 
 
 # Seleciona uma imagem do computador

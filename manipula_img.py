@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-from tkinter import messagebox
+from tkinter import messagebox, colorchooser
 from PIL import Image
 import numpy as np
 
@@ -41,6 +41,21 @@ def img_to_matrix(img):
     return pixel_data
 
 
+# Converte matriz em imagem
+def matrix_to_img(matrix):
+    height = len(matrix)
+    width = len(matrix[0])
+    channel = len(matrix[0][0].split(','))
+    img_array = np.zeros((height, width, channel), dtype=np.uint8)
+
+    for i in range(height):
+        for j in range(width):
+            pixel = matrix[i][j]
+            img_array[i][j] = list(map(int, pixel.split(',')))
+    
+    return Image.fromarray(img_array)
+
+
 # Carrega uma imagem
 def load_img(path):
     try:
@@ -52,25 +67,32 @@ def load_img(path):
     messagebox.showinfo('Info', 'Imagem carregada com sucesso!')
     return img
 
+
 # Pega o valor de um pixel em uma matriz
 def get_pixel(matrix, x=0, y=0):
-    
     # Verifica se está em formato de imagem do PIL
     if 'PIL' in str(type(matrix)):
         matrix = img_to_matrix(matrix)
     
-    return matrix[y][x]
+    try:
+        return matrix[y][x]
+    except Exception as e:
+        messagebox.showerror('Erro', f'Valores informados estão incorretos\nErro: {e}')
 
 
 # Faz a análise do pixel e mostra sua respectiva cor
 def verify_color(pixel, metadata):
-    if metadata['mode'].lower() == 'rgba':
-        channel = 4
-    else: channel = 3
-
-    color_matrix = np.zeros((3, 3, channel), dtype=np.uint8)
     pixel = list(map(int, pixel.split(',')))
 
+    if metadata['mode'].lower() == 'rgba':
+        channel = 4
+        if len(pixel) < 4:
+            pixel.append(255)
+    else:
+        channel = 3
+
+    color_matrix = np.zeros((3, 3, channel), dtype=np.uint8)
+    
     for i in range(3):
         for j in range(3):
             color_matrix[i, j] = pixel
@@ -78,3 +100,37 @@ def verify_color(pixel, metadata):
     color_matrix = Image.fromarray(color_matrix)
 
     plot(color_matrix)
+
+
+# Pega uma nova cor
+def set_color():
+    new_color = colorchooser.askcolor()
+    if new_color[0] != None:
+        new_color = ','.join(map(str, new_color[0]))
+        return new_color
+
+
+# Modifica a cor de todos os pixel alvo
+def change_img_color(matrix, pixel, new_pixel):
+    if 'PIL' in str(type(matrix)):
+        matrix = img_to_matrix(matrix)
+
+    # Converte o valor do pixel de string para lista de inteiros
+    pixel = list(map(int, pixel.split(',')))
+    new_pixel = list(map(int, new_pixel.split(',')))
+    if len(pixel) == 4:
+        new_pixel.append(255)
+
+    # Converte o valor do pixel de lista de inteiros para string
+    pixel = ','.join(map(str, pixel))
+    new_pixel = ','.join(map(str, new_pixel))
+
+    try:
+        for i in range(len(matrix)):
+            for j in range(len(matrix[0])):
+                if matrix[i][j] == pixel:
+                    matrix[i][j] = new_pixel
+    except Exception as e:
+        messagebox.showerror(f'Erro: {e}')
+
+    return matrix_to_img(matrix)
