@@ -9,29 +9,30 @@ import os
 # Escreve matriz em um arquivo .xlsx
 def matrix_to_excel(matrix):
     path = filedialog.askdirectory()
-    print('Isso Pode demorar um pouco...')
-    time = dt.datetime.now()
-    time = f'{time.hour}{time.minute}{time.second}'
-    try:
-        df = pd.DataFrame(matrix)
-        df.to_excel(f'{path}/Matrix-{dt.date.today()}-{time}.xlsx', header=False, index=False)
-        messagebox.showinfo('Info', f'Arquivo Matrix-{dt.date.today()}-{time}.xlsx criado com sucesso!')
-    except Exception as e:
-        messagebox.showerror('Erro', f'Erro ao escrever arquivo.\nErro: {e}')
+    if path != '':
+        time = dt.datetime.now()
+        time = f'{time.hour}{time.minute}{time.second}'
+        try:
+            df = pd.DataFrame(matrix)
+            df.to_excel(f'{path}/Matrix-{dt.date.today()}-{time}.xlsx', header=False, index=False)
+            messagebox.showinfo('Info', f'Arquivo Matrix-{dt.date.today()}-{time}.xlsx criado com sucesso!')
+        except Exception as e:
+            messagebox.showerror('Erro', f'Erro ao escrever arquivo.\nErro: {e}')
 
 
 # Escreve matriz em um arquivo .csv
 def matrix_to_csv(matrix):
     path = filedialog.askdirectory()
-    print('Isso Pode demorar um pouco...')
-    time = dt.datetime.now()
-    time = f'{time.hour}{time.minute}{time.second}'
-    try:
-        df = pd.DataFrame(matrix)
-        df.to_csv(f'{path}/Matrix-{dt.date.today()}-{time}.csv', header=False, index=False)
-        messagebox.showinfo('Info', f'Arquivo Matrix-{dt.date.today()}-{time}.csv criado com sucesso!')
-    except Exception as e:
-        messagebox.showerror('Erro', f'Erro ao escrever arquivo.\nErro: {e}')
+    if path != '':
+        time = dt.datetime.now()
+        time = f'{time.hour}{time.minute}{time.second}'
+        try:
+            df = pd.DataFrame(matrix)
+            df.to_csv(f'{path}/Matrix-{dt.date.today()}-{time}.csv', header=False, index=False)
+            messagebox.showinfo('Info', f'Arquivo Matrix-{dt.date.today()}-{time}.csv criado com sucesso!')
+        except Exception as e:
+            messagebox.showerror('Erro', f'Erro ao escrever arquivo.\nErro: {e}')
+
 
 # Lê arquivo de matrz em .xlsx ou .csv 
 def read_file(path):
