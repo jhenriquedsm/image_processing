@@ -134,3 +134,36 @@ def change_img_color(matrix, pixel, new_pixel):
         messagebox.showerror(f'Erro: {e}')
 
     return matrix_to_img(matrix)
+
+
+# Retona o menor valor entre o ciano(c), magenta(m) e amarelo(y)
+def min(cmy):
+    min = cmy[0]
+    for i in cmy:
+        if i < min:
+            min = i
+    return min
+
+
+# Faz a converção de RGB para CMYK
+def to_cmyk(matrix):
+    if 'PIL' in str(type(matrix)):
+        matrix = img_to_matrix(matrix)
+    
+    height = len(matrix)
+    width = len(matrix[0])
+
+    rgb = list()
+    cmyk = list()
+    array = np.zeros((height, width), 4)
+
+    for i in range(height):
+        for j in range(width):
+            rgb = list(map(int, matrix[i][j].split(',')))
+            cmyk = [(1 - rgb[0]/255),
+                    (1 - rgb[1]/255),
+                    (1 - rgb[2]/255)]
+            cmyk.append(min(cmyk))
+            array[i][j] = cmyk
+
+    return Image.fromarray(array)

@@ -82,6 +82,12 @@ class menu:
             messagebox.showinfo('Info', 'Nenhuma imagem foi carregada!')  
 
 
+def _convert():
+    global _matrix_cache
+    _matrix_cache = mi.to_cmyk(_matrix_cache)
+    mi.plot(_matrix_cache)
+
+
 # Seleciona uma imagem do computador
 def _select_image():
     global _matrix_cache, _img_metadata
