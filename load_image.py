@@ -75,10 +75,15 @@ class menu:
             img_path = filedialog.askopenfilename()
             if img_path != '':
                 _matrix_cache = mi.load_img(img_path)
-                _img_metadata['mode'] = _matrix_cache.mode
-                _img_metadata['name'] = os.path.basename(img_path)
-                _img_metadata['size'] = _matrix_cache.size
-                subroot.destroy()
+                if _matrix_cache.mode not in ('RGB', 'RGBA'):
+                    _matrix_cache = None
+                    messagebox.showinfo('Info', 'O modo da imagem não é suportado!')
+                else:
+                    _img_metadata['mode'] = _matrix_cache.mode
+                    _img_metadata['name'] = os.path.basename(img_path)
+                    _img_metadata['size'] = _matrix_cache.size
+                    messagebox.showinfo('Info', 'Imagem carregada com sucesso!')
+                    subroot.destroy()
 
         # Seleciona um arquivo do computador
         def _select_file():
