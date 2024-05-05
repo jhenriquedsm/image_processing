@@ -64,7 +64,6 @@ def load_img(path):
         messagebox.showerror('Erro', f'Falha ao carregar imagem:\nERRO: {e}\nO arquivo selecionado não é compativel')
         return None
 
-    messagebox.showinfo('Info', 'Imagem carregada com sucesso!')
     return img
 
 
@@ -134,3 +133,43 @@ def change_img_color(matrix, pixel, new_pixel):
         messagebox.showerror(f'Erro: {e}')
 
     return matrix_to_img(matrix)
+
+
+# Faz a converção de RGB para CMYK
+def to_cmyk(matrix):
+    if 'PIL' in str(type(matrix)):
+        matrix = img_to_matrix(matrix)
+    
+    height = len(matrix)
+    width = len(matrix[0])
+    RGB_SCALE = 255
+    CMYK_SCALE = 100
+    cmyk = []
+    array = np.zeros((height, width, 4), dtype=np.uint8)
+
+    for i in range(height):
+        for j in range(width):
+            rgb = list(map(int, matrix[i][j].split(',')))
+            if (rgb[0], rgb[1], rgb[2]) == (0, 0, 0):
+                # black
+                cmyk = [0, 0, 0, CMYK_SCALE]
+                array[i][j] = cmyk
+
+            # Normaliza o rgb [0,255] para cmy [0,1]
+            c = 1 - rgb[0] / RGB_SCALE
+            m = 1 - rgb[1] / RGB_SCALE
+            y = 1 - rgb[2] / RGB_SCALE
+
+            # Gera k
+            min_cmy = min(c, m, y)
+            k = min_cmy
+
+            c = (c - min_cmy) / (1 - min_cmy) if (1 - min_cmy) != 0 else 0
+            m = (m - min_cmy) / (1 - min_cmy) if (1 - min_cmy) != 0 else 0
+            y = (y - min_cmy) / (1 - min_cmy) if (1 - min_cmy) != 0 else 0
+            
+            cmyk = [c * CMYK_SCALE, m * CMYK_SCALE, y * CMYK_SCALE, k * CMYK_SCALE]
+
+            array[i][j] = cmyk
+        
+    return Image.fromarray(array, 'CMYK')
