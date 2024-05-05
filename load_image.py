@@ -19,17 +19,14 @@ class menu:
         self.master.geometry("300x320")
         self.master.protocol('WM_DELETE_WINDOW', quit)
 
-        # Botão para selecionar uma imagem
-        tk.Button(self.master, text="Carregar Imagem", command=_select_image).pack(pady=10)
+        # Botão para carregar um arquivo
+        tk.Button(self.master, text="Carregar", command=self._load).pack(pady=10)
 
-        # Botão para selecionar um arquivo .csv ou .xlsx
-        tk.Button(self.master, text='Carregar arquivo', command=_select_file).pack(pady=10)
+        # Botão para salvar matriz em arquivo
+        tk.Button(self.master, text='Salvar', command=self._save_as).pack(pady=10)
 
-        # Botão para salvar matriz em arquivo .csv
-        tk.Button(self.master, text='Salvar CSV', command=_to_csv).pack(pady=10)
-
-        # Botão para salvar matriz em arquivo .xlsx
-        tk.Button(self.master, text='Salvar XLSX', command=_to_excel).pack(pady=10)
+        # Botão para converter imagem RGB para CMYK
+        tk.Button(self.master, text='Converter para CMYK', command=_convert).pack(pady=10)
 
         # Botaão para limpar cache
         tk.Button(self.master, text='Excluir cache', command=_clean_cache).pack(pady=10)
@@ -41,6 +38,68 @@ class menu:
         tk.Button(self.master, text='Visualizar pixel', command=self._show_pixel).pack(pady=10)
 
     
+    # Submenu para salvar em arquivo .csv e .xlsx
+    def _save_as(self):
+        # Carrega arquivo .csv
+        def _to_csv():
+            global _matrix_cache
+            if not _matrix_cache == None:
+                matrix = mi.img_to_matrix(_matrix_cache)
+                ma.matrix_to_csv(matrix)
+            else: messagebox.showinfo('Info', 'Nenhuma imagem foi carregada!')
+            subroot.destroy()
+
+        # carrega arquivo .xlsx
+        def _to_excel():
+            global _matrix_cache
+            if not _matrix_cache == None:
+                matrix = mi.img_to_matrix(_matrix_cache)
+                ma.matrix_to_excel(matrix)
+            else: messagebox.showinfo('Info', 'Nenhuma imagem foi carregada!')
+            subroot.destroy()
+        
+        subroot = tk.Toplevel(self.master)
+        subroot.title('Salvar')
+        subroot.geometry('200x150')
+        subroot.protocol('WM_DELETE_WINDOW', subroot.destroy)
+        tk.Label(subroot, text='Salvar Como:').pack(pady=5)
+        tk.Button(subroot, text='CSV', command=_to_csv).pack(pady=5)
+        tk.Button(subroot, text='XLSX', command=_to_excel).pack(pady=5)
+
+
+    # Submenu para carregar imagem ou arquivo
+    def _load(self):
+        # Seleciona uma imagem do computador
+        def _select_image():
+            global _matrix_cache, _img_metadata
+            img_path = filedialog.askopenfilename()
+            if img_path != '':
+                _matrix_cache = mi.load_img(img_path)
+                _img_metadata['mode'] = _matrix_cache.mode
+                _img_metadata['name'] = os.path.basename(img_path)
+                _img_metadata['size'] = _matrix_cache.size
+                subroot.destroy()
+
+        # Seleciona um arquivo do computador
+        def _select_file():
+            global _matrix_cache, _img_metadata
+            file_path = filedialog.askopenfilename()
+            if file_path != '':
+                _matrix_cache = ma.read_file(file_path)
+                _img_metadata['mode'] = _matrix_cache.mode
+                _img_metadata['name'] = os.path.basename(file_path)
+                _img_metadata['size'] = _matrix_cache.size
+                subroot.destroy()
+
+        subroot = tk.Toplevel(self.master)
+        subroot.title('Carregar')
+        subroot.geometry('200x150')
+        subroot.protocol('WM_DELETE_WINDOW', subroot.destroy)
+        tk.Label(subroot, text='Carregar...').pack(pady=5)
+        tk.Button(subroot, text='Imagem', command=_select_image).pack(pady=5)
+        tk.Button(subroot, text='Arquivo', command=_select_file).pack(pady=5)
+
+
     # Informando a posição do pixel, mostrará a cor do pixel
     def _show_pixel(self):
         global _matrix_cache, _img_metadata
@@ -82,39 +141,17 @@ class menu:
             messagebox.showinfo('Info', 'Nenhuma imagem foi carregada!')  
 
 
+# Converte RGB para CMYC
 def _convert():
-    global _matrix_cache
-    _matrix_cache = mi.to_cmyk(_matrix_cache)
-    mi.plot(_matrix_cache)
-
-
-# Seleciona uma imagem do computador
-def _select_image():
     global _matrix_cache, _img_metadata
-    img_path = filedialog.askopenfilename()
-    if img_path != '':
-        _matrix_cache = mi.load_img(img_path)
-        _img_metadata['mode'] = _matrix_cache.mode
-        _img_metadata['name'] = os.path.basename(img_path)
-        _img_metadata['size'] = _matrix_cache.size
-
-
-# Carrega arquivo .csv
-def _to_csv():
-    global _matrix_cache
-    if not _matrix_cache == None:
-        matrix = mi.img_to_matrix(_matrix_cache)
-        ma.matrix_to_csv(matrix)
-    else: messagebox.showinfo('Info', 'Nenhuma imagem foi carregada!')
-
-
-# carrega arquivo .xlsx
-def _to_excel():
-    global _matrix_cache
-    if not _matrix_cache == None:
-        matrix = mi.img_to_matrix(_matrix_cache)
-        ma.matrix_to_excel(matrix)
-    else: messagebox.showinfo('Info', 'Nenhuma imagem foi carregada!')
+    if _matrix_cache != None:
+        if _img_metadata['mode'] != 'CMYK':
+            _matrix_cache = mi.to_cmyk(_matrix_cache)
+            mi.plot(_matrix_cache)
+        else:
+            messagebox.showinfo('Info', 'Essa imagem já está no padrão CMYK!')
+    else:
+        messagebox.showinfo('Info', 'Nenhuma imagem foi carregada')
 
 
 # Limpa a variável global de cache
@@ -132,27 +169,13 @@ def _show_img():
     if _matrix_cache != None:
         mi.plot(_matrix_cache, _img_metadata)
     else: messagebox.showinfo('Info', 'Nenhuma imagem foi carregada!')
-    
-
-# Seleciona um arquivo do computador
-def _select_file():
-    global _matrix_cache, _img_metadata
-    file_path = filedialog.askopenfilename()
-    if file_path != '':
-        _matrix_cache = ma.read_file(file_path)
-        _img_metadata['mode'] = _matrix_cache.mode
-        _img_metadata['name'] = os.path.basename(file_path)
-        _img_metadata['size'] = _matrix_cache.size
 
 
 def main():
-    global root
     # Criar a janela principal
     root = tk.Tk()
-    
     # Inicializa a interface
     menu(root)
-
     # Executa o loop principal da interface gráfica
     root.mainloop()
 
