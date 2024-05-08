@@ -6,10 +6,14 @@ import numpy as np
 # Mostra a imagem
 def plot(data, metadata='Figure'):
     if metadata != 'Figure':
-        title = f'Name: {metadata["name"]} Mode: {metadata["mode"]} Size: {metadata["size"]}'
-    else: title = metadata
-
-    plt.imshow(data)
+        title = f'Name: {metadata["name"]} Mode: {data.mode} Size: {metadata["size"]}'
+    else: 
+        title = metadata
+    if data.mode == 'L':
+        cmap = 'gray'
+    else:
+        cmap = None
+    plt.imshow(data, cmap=cmap)
     plt.axis('off')
     fig = plt.gcf()
     fig.canvas.manager.set_window_title(title)
@@ -134,42 +138,103 @@ def change_img_color(matrix, pixel, new_pixel):
 
     return matrix_to_img(matrix)
 
+def rgb_or_rgba_para_cmyk(img, fundo=(0, 0, 0, 0)):
+    if img.mode == 'RGB':
+        img_cmyk = img.convert('CMYK')
+        return img_cmyk
+    elif img.mode == 'RGBA':
+        fundo_cmyk = Image.new("CMYK", img.size, fundo)
+        img_rgb = img.convert("RGB")  # Remove o canal alfa
+        img_cmyk = img_rgb.convert('CMYK')
+        img_rgba_cmyk = Image.composite(img_cmyk, fundo_cmyk, img.split()[3])
+        return img_rgba_cmyk
 
-# Faz a converção de RGB para CMYK
-def to_cmyk(matrix):
-    if 'PIL' in str(type(matrix)):
-        matrix = img_to_matrix(matrix)
-    
-    height = len(matrix)
-    width = len(matrix[0])
-    RGB_SCALE = 255
-    CMYK_SCALE = 100
-    cmyk = []
-    array = np.zeros((height, width, 4), dtype=np.uint8)
+def grayscale_avg(img):
+    if img.mode == 'RGBA':
+        # Processar como RGBA
+        img_array = np.array(img)
+        gray_array = img_array.mean(axis=2).astype(np.uint8)  # Usando média para conversão para cinza
+        # Cria uma nova imagem em escala de cinza com canal alfa
+        final_img_array = np.zeros((*gray_array.shape, 2), dtype=np.uint8)
+        final_img_array[..., 0] = gray_array  # Canal de cinza
+        final_img_array[..., 1] = img_array[..., 3]  # Canal alfa
+        final_img = Image.fromarray(final_img_array, mode="LA")
+    elif img.mode == 'RGB':
+        # Processar como RGB
+        img_array = np.array(img)
+        gray_array = img_array.mean(axis=2).astype(np.uint8)
+        final_img = Image.fromarray(gray_array, mode="L")
+    else:
+        rgb_img = img.convert('RGB')
+        rgb_array = np.array(rgb_img)
+        gray_array = rgb_array.mean(axis=2).astype(np.uint8)
+        final_img = Image.fromarray(gray_array, mode="L")
+    return final_img
 
-    for i in range(height):
-        for j in range(width):
-            rgb = list(map(int, matrix[i][j].split(',')))
-            if (rgb[0], rgb[1], rgb[2]) == (0, 0, 0):
-                # black
-                cmyk = [0, 0, 0, CMYK_SCALE]
-                array[i][j] = cmyk
+def grayscale_max(img):
+    if img.mode == 'RGBA':
+        # Processar como RGBA
+        img_array = np.array(img)
+        gray_array = img_array.max(axis=2)  # Usando mínimo para conversão para cinza
+        # Cria uma nova imagem em escala de cinza com canal alfa
+        final_img_array = np.zeros((*gray_array.shape, 2), dtype=np.uint8)
+        final_img_array[..., 0] = gray_array  # Canal de cinza
+        final_img_array[..., 1] = img_array[..., 3]  # Canal alfa
+        final_img = Image.fromarray(final_img_array, mode="LA")
+    elif img.mode == 'RGB':
+        # Processar como RGB
+        img_array = np.array(img)
+        gray_array = img_array.max(axis=2)
+        final_img = Image.fromarray(gray_array, mode="L")
+    else:
+        rgb_img = img.convert('RGB')
+        rgb_array = np.array(rgb_img)
+        gray_array = rgb_array.max(axis=2).astype(np.uint8)
+        final_img = Image.fromarray(gray_array, mode="L")
+    return final_img
 
-            # Normaliza o rgb [0,255] para cmy [0,1]
-            c = 1 - rgb[0] / RGB_SCALE
-            m = 1 - rgb[1] / RGB_SCALE
-            y = 1 - rgb[2] / RGB_SCALE
+def grayscale_min(img):
+    if img.mode == 'RGBA':
+        # Processar como RGBA
+        img_array = np.array(img)
+        gray_array = img_array.min(axis=2)  # Usando mínimo para conversão para cinza
+        # Cria uma nova imagem em escala de cinza com canal alfa
+        final_img_array = np.zeros((*gray_array.shape, 2), dtype=np.uint8)
+        final_img_array[..., 0] = gray_array  # Canal de cinza
+        final_img_array[..., 1] = img_array[..., 3]  # Canal alfa
+        final_img = Image.fromarray(final_img_array, mode="LA")
+    elif img.mode == 'RGB':
+        # Processar como RGB
+        img_array = np.array(img)
+        gray_array = img_array.min(axis=2)
+        final_img = Image.fromarray(gray_array, mode="L")
+    else:
+        rgb_img = img.convert('RGB')
+        rgb_array = np.array(rgb_img)
+        gray_array = rgb_array.min(axis=2).astype(np.uint8)
+        final_img = Image.fromarray(gray_array, mode="L")
+    return final_img
 
-            # Gera k
-            min_cmy = min(c, m, y)
-            k = min_cmy
+def grayscale_luminosity(img):
+    if img.mode == 'RGBA':
+        # Processar como RGBA
+        img_array = np.array(img)
+        gray_array = np.dot(img_array[..., :3], [0.299, 0.587, 0.114]).astype(np.uint8)
+        # Cria uma nova imagem em escala de cinza com canal alfa
+        final_img_array = np.zeros((*gray_array.shape, 2), dtype=np.uint8)
+        final_img_array[..., 0] = gray_array  # Canal de cinza
+        final_img_array[..., 1] = img_array[..., 3]  # Canal alfa
+        final_img = Image.fromarray(final_img_array, mode="LA")
+    elif img.mode == 'RGB':
+        # Processar como RGB
+        img_array = np.array(img)
+        gray_array = np.dot(img_array, [0.299, 0.587, 0.114]).astype(np.uint8)
+        final_img = Image.fromarray(gray_array, mode="L")
+    else:
+        rgb_img = img.convert('RGB')
+        rgb_array = np.array(rgb_img)
+        gray_array = np.dot(rgb_array, [0.299, 0.587, 0.114]).astype(np.uint8)
+        final_img = Image.fromarray(gray_array, mode="L")
+    return final_img
 
-            c = (c - min_cmy) / (1 - min_cmy) if (1 - min_cmy) != 0 else 0
-            m = (m - min_cmy) / (1 - min_cmy) if (1 - min_cmy) != 0 else 0
-            y = (y - min_cmy) / (1 - min_cmy) if (1 - min_cmy) != 0 else 0
-            
-            cmyk = [c * CMYK_SCALE, m * CMYK_SCALE, y * CMYK_SCALE, k * CMYK_SCALE]
 
-            array[i][j] = cmyk
-        
-    return Image.fromarray(array, 'CMYK')

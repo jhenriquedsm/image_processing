@@ -19,7 +19,7 @@
 - ✅ Adicionar ao código uma função de transformação do sistema RGB para CMYK
 
 ## Etapa 5
-- ⏳ Verificação da imagem para as diversas formas de transformação para escala de cinza
+- ✅ Verificação da imagem para as diversas formas de transformação para escala de cinza
 ---
 
 📢 **© 2024 UDF. Todos os direitos reservados.**
