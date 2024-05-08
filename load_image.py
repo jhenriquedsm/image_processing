@@ -104,19 +104,28 @@ def convert_and_show(method):
         original_img = _matrix_cache
         gray_img = method(_matrix_cache)
         messagebox.showinfo("Info", "Imagem convertida com sucesso para a escala de cinza desejada!")
-        _matrix_cache = gray_img
         method_name = method.__name__
-
+        nome_original = _img_metadata['name']
+        if _matrix_cache.mode == 'L':
+            cmap = 'gray'
+            indice_ultimo_sublinhado = _img_metadata['name'].rfind('_')
+            nome_base, extensao = _img_metadata['name'][:indice_ultimo_sublinhado], _img_metadata['name'][indice_ultimo_sublinhado + 1:].split('.')[1]
+            _img_metadata['name'] = f"{nome_base}_{method_name[10:]}.{extensao}"
+        else:
+            partes = _img_metadata['name'].split('.')
+            _img_metadata['name'] = partes[0] + '_' + method_name[10:] + '.' + partes[1]
+            cmap = None
         plt.figure(figsize=(12, 6))
         plt.subplot(1, 2, 1)
-        plt.imshow(original_img)
-        plt.title('Original - ' + _img_metadata['name'])
+        plt.imshow(original_img, cmap=cmap)
+        plt.title('Original - ' + nome_original)
         plt.axis('off')
         plt.subplot(1, 2, 2)
         plt.imshow(gray_img, cmap='gray')
-        plt.title('Escala de Cinza - ' + method_name[10:] + ' - ' +_img_metadata['name']) 
+        plt.title('Escala de Cinza - ' + _img_metadata['name']) 
         plt.axis('off')
         plt.show()
+        _matrix_cache = gray_img
     else:
         messagebox.showinfo("Erro", "Nenhuma imagem carregada!")
 
