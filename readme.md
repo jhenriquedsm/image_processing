@@ -16,10 +16,10 @@
 - ✅ Adicionar ao código uma função de alterar a cor de pixels que tenha uma mesma cor para outra cor a escolha do usuário
 
 ## Etapa 4
-- ⏳ Adicionar ao código uma função de transformação do sistema RGB para CMYK
+- ✅ Adicionar ao código uma função de transformação do sistema RGB para CMYK
 
 ## Etapa 5
-- ⏳ Verificação da imagem para as diversas formas de transformação para escala de cinza
+- ✅ Verificação da imagem para as diversas formas de transformação para escala de cinza
 ---
 
 📢 **© 2024 UDF. Todos os direitos reservados.**
