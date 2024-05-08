@@ -44,6 +44,7 @@ def read_file(path):
     else: 
         messagebox.showinfo('Info', f'O arquivo "{filename}" não é suportado')
         return None
+    messagebox.showinfo('Info', f'Arquivo {filename} carregado com sucesso!')
 
     # Obter as dimensões da imagem do DataFrame
     height, width = df.shape
@@ -64,7 +65,5 @@ def read_file(path):
 
     # Converter a matriz numpy reconstruída em um objeto de imagem
     reconstructed_img = Image.fromarray(reconstructed_image_array)
-
-    messagebox.showinfo('Info', f'Arquivo {filename} carregado com sucesso!')
 
     return reconstructed_img
