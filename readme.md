@@ -7,7 +7,7 @@
 - André Ruperto, João Pedro Coutinho, José Henrique, Julio Augusto, Miguel Moraes e Yago Antonio.
 
 ## Etapa 1
-- ✅ Fazer um código que Transforma qualquer imagem na base de dados em uma matriz com saída em Excel
+- ✅ Fazer um código que transforma qualquer imagem na base de dados em uma matriz com saída em Excel
 
 ## Etapa 2
 - ✅ Adicionar ao código uma função para verificar a cor de um pixel específico da imagem
