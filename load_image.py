@@ -6,18 +6,16 @@ import matplotlib.pyplot as plt
 import manipula_arquivo as ma
 import manipula_img as mi
 
-
 # variável de cache
 _matrix_cache = None
 _img_metadata = {'name': None, 'size': None, 'mode': None}
-
 
 class menu:
     def __init__(self, master):
         self.master = master
 
         self.master.title('Menu')
-        self.master.geometry("300x430")
+        self.master.geometry("300x360")
         self.master.protocol('WM_DELETE_WINDOW', quit)
 
         # Botão para selecionar uma imagem
@@ -32,7 +30,7 @@ class menu:
         # Botão para salvar matriz em arquivo .xlsx
         tk.Button(self.master, text='Salvar XLSX', command=_to_excel).pack(pady=10)
 
-        # Botaão para limpar cache
+        # Botão para limpar cache
         tk.Button(self.master, text='Excluir cache', command=_clean_cache).pack(pady=10)
 
         # Botão de visualização de imagem
@@ -41,9 +39,12 @@ class menu:
         # Botão de visualização de imagem
         tk.Button(self.master, text='Visualizar pixel', command=self._show_pixel).pack(pady=10)
 
+        # Botão para converter imagem RGB para CMYK
         tk.Button(self.master, text="Converter para CMYK", command=converter_para_cmyk).pack(pady=10)
 
+        # Botão para converter imagem colorida em varias formas de escala de cinza
         tk.Button(master, text="Escala de Cinza", command=self.open_grayscale_menu).pack(pady=10)
+
 
     # Informando a posição do pixel, mostrará a cor do pixel
     def _show_pixel(self):
@@ -201,7 +202,6 @@ def converter_para_cmyk():
             messagebox.showerror('Erro', str(e))
     else:
         messagebox.showinfo('Info', 'Nenhuma imagem carregada!')
-
 
 def main():
     global root
