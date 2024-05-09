@@ -68,6 +68,7 @@ def load_img(path):
         messagebox.showerror('Erro', f'Falha ao carregar imagem:\nERRO: {e}\nO arquivo selecionado não é compativel')
         return None
 
+    messagebox.showinfo('Info', 'Imagem carregada com sucesso!')
     return img
 
 
