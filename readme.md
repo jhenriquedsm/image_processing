@@ -20,6 +20,12 @@
 
 ## Etapa 5
 - ✅ Verificação da imagem para as diversas formas de transformação para escala de cinza
+
+## Etapa 6
+- ⌛ Aplicação de uma função para aumentar o contraste no processamento da imagem nas escalas de cinza
+
+## Etapa 7
+- ⌛ Aplicação de uma função para aumentar o contraste no processamento de imagem colorida
 ---
 
 📢 **© 2024 UDF. Todos os direitos reservados.**
