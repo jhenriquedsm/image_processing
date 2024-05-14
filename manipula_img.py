@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 from tkinter import messagebox, colorchooser
-from PIL import Image
+from PIL import Image, ImageEnhance
 import numpy as np
 
 # Mostra a imagem
@@ -238,4 +238,8 @@ def grayscale_luminosity(img):
         final_img = Image.fromarray(gray_array, mode="L")
     return final_img
 
+def aumentar_contraste(img):
+    enhancer = ImageEnhance.Contrast(img)
+    enhanced_image = enhancer.enhance(2.0)  # Ajuste o fator para o nível desejado de contraste
+    return enhanced_image
 
