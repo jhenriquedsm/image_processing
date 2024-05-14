@@ -139,6 +139,8 @@ def change_img_color(matrix, pixel, new_pixel):
 
     return matrix_to_img(matrix)
 
+
+# Converte RGB/RGBA para CMYK
 def rgb_or_rgba_para_cmyk(img, fundo=(0, 0, 0, 0)):
     if img.mode == 'RGB':
         img_cmyk = img.convert('CMYK')
@@ -150,6 +152,8 @@ def rgb_or_rgba_para_cmyk(img, fundo=(0, 0, 0, 0)):
         img_rgba_cmyk = Image.composite(img_cmyk, fundo_cmyk, img.split()[3])
         return img_rgba_cmyk
 
+
+# Converte imagem colorida usando a técnica de média
 def grayscale_avg(img):
     if img.mode == 'RGBA':
         # Processar como RGBA
@@ -172,6 +176,8 @@ def grayscale_avg(img):
         final_img = Image.fromarray(gray_array, mode="L")
     return final_img
 
+
+# Converte imagem colorida usando a técnica demáximo
 def grayscale_max(img):
     if img.mode == 'RGBA':
         # Processar como RGBA
@@ -194,6 +200,8 @@ def grayscale_max(img):
         final_img = Image.fromarray(gray_array, mode="L")
     return final_img
 
+
+# Converte imagem colorida usando a técnica de mínimo
 def grayscale_min(img):
     if img.mode == 'RGBA':
         # Processar como RGBA
@@ -216,6 +224,8 @@ def grayscale_min(img):
         final_img = Image.fromarray(gray_array, mode="L")
     return final_img
 
+
+# Converte imagem colorida usando a técnica da luminosidade
 def grayscale_luminosity(img):
     if img.mode == 'RGBA':
         # Processar como RGBA
@@ -239,3 +249,79 @@ def grayscale_luminosity(img):
     return final_img
 
 
+# Gera o histograma dos pixels da imagem
+def histograma(img):
+    array = np.asarray(img,dtype=np.uint8)
+    # Imagens em escala de cinza
+    if img.mode == 'LA':
+        # Gera o histograma e popula o histograma
+        pixel_count = dict()
+        for i in array.shape[0]:
+            for j in array.shape[1]:
+                if array[i][j][0] not in pixel_count.keys:
+                    pixel_count[array[i][j][0]] = 1
+                else: pixel_count[array[i][j][0]] += 1
+
+        # Retorna dicionário
+        return pixel_count
+    
+    # Imagens coloridas (RGB/RGBA)
+    elif img.mode in ('RGB', 'RGBA'):
+        r = [], g = [], b = []
+        # Gera o histograma para cada cor e popula o histograma para cada cor
+        for i in array.shape[0]:
+            for j in array.shape[1]:
+                if array[i][j][0] not in r.keys:
+                    r[array[i][j][0]] = 1
+                else: r[array[i][j][0]] += 1
+
+                if array[i][j][1] not in g.keys:
+                    g[array[i][j][1]] = 1
+                else: g[array[i][j][1]] += 1
+
+                if array[i][j][2] not in b.keys:
+                    r[array[i][j][2]] = 1
+                else: b[array[i][j][2]] += 1          
+
+        # Retorna lista de dicionários (para cada cor respectivamente)
+        return [r, g, b]
+    
+    # Imagens coloridas (CMYK)
+    elif img.mode == 'CMYK':
+        c = [], m = [], y = [], k = []
+        # Gera e popula o histograma para cada cor CMYK
+        for i in array.shape[0]:
+            for j in array.shape[1]:
+                if array[i][j][0] not in c.keys:
+                    c[array[i][j][0]] = 1
+                else: c[array[i][j][0]] += 1
+
+                if array[i][j][1] not in m.keys:
+                    c[array[i][j][1]] = 1
+                else: c[array[i][j][1]] += 1
+
+                if array[i][j][2] not in y.keys:
+                    c[array[i][j][2]] = 1
+                else: c[array[i][j][2]] += 1
+
+                if array[i][j][3] not in k.keys:
+                    c[array[i][j][3]] = 1
+                else: c[array[i][j][3]] += 1
+
+        # Retorna lista de dicionários (para cada cor respectivamente)
+        return [c, m, y, k]
+
+    else: messagebox.showinfo('Info', 'A imagem não é compatível!')
+
+
+'''# Altera o contraste da imagem
+def contraste(histogram, contrast_lvl):
+    if len(histogram) == 1:
+        pixel = []
+        tot_pixel += [_ for _ in histogram.values]
+        cdf = 0
+        ant = 0
+        for i in range(len(histogram.keys)):
+            for j in range(3):
+                cdf += histogram.values[i]
+                pixel.append(histogram.keys[i])'''

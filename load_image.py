@@ -86,7 +86,6 @@ class menu:
                     _img_metadata['mode'] = _matrix_cache.mode
                     _img_metadata['name'] = os.path.basename(img_path)
                     _img_metadata['size'] = _matrix_cache.size
-                    messagebox.showinfo('Info', 'Imagem carregada com sucesso!')
                     subroot.destroy()
 
         # Seleciona um arquivo do computador
