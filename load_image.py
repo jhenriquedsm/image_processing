@@ -258,8 +258,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-#partes
-#1 - implementar a questão de salvar a imagem em xlsx (ta mo teste)
-#2 - mostrar todas as escalas de cinza ao mesmo tempo
-#3 - salvar as escalas de cinza em arquivo
