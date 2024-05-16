@@ -34,7 +34,7 @@ def matrix_to_csv(matrix):
             messagebox.showerror('Erro', f'Erro ao escrever arquivo.\nErro: {e}')
 
 
-# Lê arquivo de matrz em .xlsx ou .csv 
+# Lê arquivo de matriz em .xlsx ou .csv 
 def read_file(path):
     filename = os.path.basename(path)
     if '.csv' in path:
