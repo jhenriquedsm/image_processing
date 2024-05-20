@@ -47,6 +47,22 @@ class menu:
 
         tk.Button(self.master, text="Aumentar contraste", command=aplicacao_contraste).pack(pady=10)
 
+        tk.Button(self.master, text='Filtro convolucional', command=self._filter).pack(pady=10)
+
+    def _filter(self):
+        global _matrix_cache, _img_metadata
+        blur = mi.blur_filter(_matrix_cache)
+        edge = mi.edge_filter(_matrix_cache)
+        if _matrix_cache != None:
+            subroot = tk.Toplevel(self.master)
+            subroot.title('Image Filters')
+            subroot.geometry("200x150")
+            tk.Button(subroot, text='Aplicar blur', command=lambda: mi.plot(blur, _img_metadata)).pack(pady=10)
+            tk.Button(subroot, text='Aplicar efeito de bordas', command=lambda: mi.plot(edge, _img_metadata)).pack(pady=10)
+        else:
+            messagebox.showinfo('Info', 'Nenhuma imagem foi carregada!')
+
+
     # Informando a posição do pixel, mostrará a cor do pixel
     def _show_pixel(self):
         global _matrix_cache, _img_metadata
