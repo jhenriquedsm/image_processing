@@ -22,10 +22,19 @@
 - ✅ Verificação da imagem para as diversas formas de transformação para escala de cinza
 
 ## Etapa 6
-- ⌛ Aplicação de uma função para aumentar o contraste no processamento da imagem nas escalas de cinza
+- ✅ Aplicação de uma função para aumentar o contraste no processamento da imagem nas escalas de cinza
 
 ## Etapa 7
-- ⌛ Aplicação de uma função para aumentar o contraste no processamento de imagem colorida
+- ✅ Aplicação de uma função para aumentar o contraste no processamento da imagem colorida
+
+## Etapa 8
+- ⌛ Implementação de filtros que retirem um ou mais canais de cor de uma imagem dependendo do sistema de cores que esteja sendo aplicado
+
+## Etapa 9
+- ⌛ Implementação do filtro Blur mais qualquer outro filtro convolucional
+
+## Etapa 10
+- ✅ Implementação de uma interface para execução das etapas em qualquer ordem, podendo aproveitar o resultado de uma operação anterior para executar um novo processamento na imagem.
 ---
 
 📢 **© 2024 UDF. Todos os direitos reservados.**
