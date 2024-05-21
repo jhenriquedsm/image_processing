@@ -43,11 +43,15 @@ class menu:
         # Informando a posição do pixel, mostrará a cor do pixel
         def _show_pixel():
             def _():
-                pixel['original'] = mi.get_pixel(_matrix_cache, int(in_x.get()), int(in_y.get()))
-                if pixel['original'] != None:
-                    subroot2.geometry('200x190')
-                    tk.Button(subroot2, text='Mudar a cor', command=_mod_color).pack(pady=5)
-                    mi.verify_color(pixel['original'], _img_metadata)
+                if _matrix_cache != None:
+                    pixel['original'] = mi.get_pixel(_matrix_cache, int(in_x.get()), int(in_y.get()))
+                    if pixel['original'] != None:
+                        subroot2.geometry('200x190')
+                        tk.Button(subroot2, text='Mudar a cor', command=_mod_color).pack(pady=5)
+                        mi.verify_color(pixel['original'], _img_metadata)
+                else:
+                    messagebox.showinfo('Info', 'Nenhuma imagem foi carregada!')
+                    subroot2.destroy()
 
             def _mod_color():
                 pixel['new'] = mi.set_color()
@@ -63,102 +67,123 @@ class menu:
                 subroot2.destroy()
 
             # Cria um submenu para inserir os pixels
-            subroot2 = tk.Toplevel(subroot)
-            subroot2.title('Pixel Picker')
-            subroot2.geometry("200x150")
-            subroot2.protocol('WM_DELETE_WINDOW', subroot2.destroy)
-            tk.Label(subroot2, text='Largura:').pack(pady=5)
-            in_x = tk.Entry(subroot2)
-            in_x.pack(pady=5)
-            tk.Label(subroot2, text='Altura:').pack(pady=5)
-            in_y = tk.Entry(subroot2)
-            in_y.pack(pady=5)
-            tk.Button(subroot2, text='OK', command=_).pack(pady=5)
+            if _matrix_cache != None:
+                subroot2 = tk.Toplevel(subroot)
+                subroot2.title('Pixel Picker')
+                subroot2.geometry("200x150")
+                subroot2.protocol('WM_DELETE_WINDOW', subroot2.destroy)
+                tk.Label(subroot2, text='Largura:').pack(pady=5)
+                in_x = tk.Entry(subroot2)
+                in_x.pack(pady=5)
+                tk.Label(subroot2, text='Altura:').pack(pady=5)
+                in_y = tk.Entry(subroot2)
+                in_y.pack(pady=5)
+                tk.Button(subroot2, text='OK', command=_).pack(pady=5)
+            else:
+                messagebox.showinfo('Info', 'Nenhuma imagem foi carregada!')
 
         #Converte RGB/RGBA para CMYK
         def converter_para_cmyk():
             global _matrix_cache
-            try:
-                img_original = _matrix_cache
-                img_cmyk = mi.rgb_or_rgba_para_cmyk(_matrix_cache)
-                _matrix_cache = img_cmyk
-                messagebox.showinfo('Info', 'Imagem convertida para CMYK com sucesso!')
-                fig, ax = plt.subplots(1, 2, figsize=(12, 6))
-                ax[0].imshow(img_original)
-                ax[0].set_title('Original')
-                ax[0].axis('off')
-                ax[1].imshow(img_cmyk)
-                ax[1].set_title('Convertida para CMYK')
-                ax[1].axis('off')
-                plt.show()
-            except Exception as e:
-                messagebox.showerror('Erro', str(e))
+            if _matrix_cache != None:
+                try:
+                    img_original = _matrix_cache
+                    img_cmyk = mi.rgb_or_rgba_para_cmyk(_matrix_cache)
+                    _matrix_cache = img_cmyk
+                    messagebox.showinfo('Info', 'Imagem convertida para CMYK com sucesso!')
+                    fig, ax = plt.subplots(1, 2, figsize=(12, 6))
+                    ax[0].imshow(img_original)
+                    ax[0].set_title('Original')
+                    ax[0].axis('off')
+                    ax[1].imshow(img_cmyk)
+                    ax[1].set_title('Convertida para CMYK')
+                    ax[1].axis('off')
+                    plt.show()
+                except Exception as e:
+                    messagebox.showerror('Erro', str(e))
+            else:
+                messagebox.showinfo('Info', 'Nenhuma imagem foi carregada!')
 
         def aplicacao_contraste():
             global _matrix_cache
-            try:
-                img_original = _matrix_cache
-                img_contraste = mi.aumentar_contraste(_matrix_cache)
-                _matrix_cache = img_contraste
-                messagebox.showinfo('Info', 'Aumento do contraste aplicado com sucesso!')
-                fig, ax = plt.subplots(1, 2, figsize=(12, 6))
-                ax[0].imshow(img_original)
-                ax[0].set_title('Original')
-                ax[0].axis('off')
-                ax[1].imshow(img_contraste)
-                ax[1].set_title('Com aumento de contaste')
-                ax[1].axis('off')
-                plt.show()
-            except Exception as e:
-                messagebox.showerror('Erro', str(e))
+            if _matrix_cache != None:
+                try:
+                    img_original = _matrix_cache
+                    img_contraste = mi.aumentar_contraste(_matrix_cache)
+                    _matrix_cache = img_contraste
+                    messagebox.showinfo('Info', 'Aumento do contraste aplicado com sucesso!')
+                    fig, ax = plt.subplots(1, 2, figsize=(12, 6))
+                    ax[0].imshow(img_original)
+                    ax[0].set_title('Original')
+                    ax[0].axis('off')
+                    ax[1].imshow(img_contraste)
+                    ax[1].set_title('Com aumento de contaste')
+                    ax[1].axis('off')
+                    plt.show()
+                except Exception as e:
+                    messagebox.showerror('Erro', str(e))
+            else:
+                messagebox.showinfo('Info', 'Nenhuma imagem foi carregada!')
 
         def open_grayscale_menu():
-            # Janela para as opções de escala de cinza
-            grayscale_window = tk.Toplevel()
-            grayscale_window.title("Menu - Escala de Cinza")
-            grayscale_window.geometry("300x150")
-            #subroot.protocol('WM_DELETE_WINDOW', grayscale_window.destroy)
+            if _matrix_cache != None:
+                # Janela para as opções de escala de cinza
+                grayscale_window = tk.Toplevel()
+                grayscale_window.title("Menu - Escala de Cinza")
+                grayscale_window.geometry("300x150")
+                #subroot.protocol('WM_DELETE_WINDOW', grayscale_window.destroy)
 
-            # Botões para cada método de conversão
-            tk.Button(grayscale_window, text="Média", command=lambda: convert_and_show(mi.grayscale_avg)).pack(pady=5)
-            tk.Button(grayscale_window, text="Máximo", command=lambda: convert_and_show(mi.grayscale_max)).pack(pady=5)
-            tk.Button(grayscale_window, text="Mínimo", command=lambda: convert_and_show(mi.grayscale_min)).pack(pady=5)
-            tk.Button(grayscale_window, text="Luminosidade", command=lambda: convert_and_show(mi.grayscale_luminosity)).pack(pady=5)
+                # Botões para cada método de conversão
+                tk.Button(grayscale_window, text="Média", command=lambda: convert_and_show(mi.grayscale_avg)).pack(pady=5)
+                tk.Button(grayscale_window, text="Máximo", command=lambda: convert_and_show(mi.grayscale_max)).pack(pady=5)
+                tk.Button(grayscale_window, text="Mínimo", command=lambda: convert_and_show(mi.grayscale_min)).pack(pady=5)
+                tk.Button(grayscale_window, text="Luminosidade", command=lambda: convert_and_show(mi.grayscale_luminosity)).pack(pady=5)
+            else:
+                messagebox.showinfo('Info', 'Nenhuma imagem foi carregada!')
 
         def _filter():
             def blur():
-                mod_img = mi.blur_filter(_matrix_cache)
-                plt.figure(figsize=(12, 6))
-                plt.subplot(1, 2, 1)
-                plt.imshow(_matrix_cache)
-                plt.title('Original')
-                plt.axis('off')
-                plt.subplot(1, 2, 2)
-                plt.imshow(mod_img)
-                plt.title('Com blur') 
-                plt.axis('off')
-                plt.show()
-                save_box(mod_img)
+                if _matrix_cache != None:
+                    mod_img = mi.blur_filter(_matrix_cache)
+                    plt.figure(figsize=(12, 6))
+                    plt.subplot(1, 2, 1)
+                    plt.imshow(_matrix_cache)
+                    plt.title('Original')
+                    plt.axis('off')
+                    plt.subplot(1, 2, 2)
+                    plt.imshow(mod_img)
+                    plt.title('Com blur') 
+                    plt.axis('off')
+                    plt.show()
+                    save_box(mod_img)
+                else:
+                    messagebox.showinfo('Info', 'Nenhuma imagem foi carregada!')
             
             def edge():
-                mod_img = mi.edge_filter(_matrix_cache)
-                plt.figure(figsize=(12, 6))
-                plt.subplot(1, 2, 1)
-                plt.imshow(_matrix_cache)
-                plt.title('Original')
-                plt.axis('off')
-                plt.subplot(1, 2, 2)
-                plt.imshow(mod_img)
-                plt.title('Com realce de bordas') 
-                plt.axis('off')
-                plt.show()
-                save_box(mod_img)
+                if _matrix_cache != None:
+                    mod_img = mi.edge_filter(_matrix_cache)
+                    plt.figure(figsize=(12, 6))
+                    plt.subplot(1, 2, 1)
+                    plt.imshow(_matrix_cache)
+                    plt.title('Original')
+                    plt.axis('off')
+                    plt.subplot(1, 2, 2)
+                    plt.imshow(mod_img)
+                    plt.title('Com realce de bordas') 
+                    plt.axis('off')
+                    plt.show()
+                    save_box(mod_img)
+                else:
+                    messagebox.showinfo('Info', 'Nenhuma imagem foi carregada!')
 
-            subroot2 = tk.Toplevel(subroot)
-            subroot2.title('Image Filters')
-            subroot2.geometry("200x150")
-            tk.Button(subroot2, text='Aplicar blur', command=blur).pack(pady=10)
-            tk.Button(subroot2, text='Aplicar efeito de bordas', command=edge).pack(pady=10)
+            if _matrix_cache != None:
+                subroot2 = tk.Toplevel(subroot)
+                subroot2.title('Image Filters')
+                subroot2.geometry("200x150")
+                tk.Button(subroot2, text='Aplicar blur', command=blur).pack(pady=10)
+                tk.Button(subroot2, text='Aplicar efeito de bordas', command=edge).pack(pady=10)
+            else:
+                messagebox.showinfo('Info', 'Nenhuma imagem foi carregada!')
 
         if _matrix_cache != None:
             subroot = tk.Toplevel(self.master)
