@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 from tkinter import messagebox, colorchooser
-from PIL import Image, ImageEnhance
+from PIL import Image, ImageEnhance, ImageFilter
 import numpy as np
 
 # Mostra a imagem
@@ -243,3 +243,13 @@ def aumentar_contraste(img):
     enhanced_image = enhancer.enhance(2.0)  # Ajuste o fator para o nível desejado de contraste
     return enhanced_image
 
+
+# Aplica filtro nas bordas da imagem
+def edge_filter(image):
+    kernel = [1, 1, 1, 1, -7, 1, 1, 1, 1]
+    return image.filter(ImageFilter.Kernel((3, 3), kernel))
+
+
+# Aplica filtro blur na imagem
+def blur_filter(image):
+    return image.filter(ImageFilter.BLUR)
