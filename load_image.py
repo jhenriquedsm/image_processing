@@ -255,7 +255,7 @@ class menu:
 
         if _matrix_cache != None:
             subroot = tk.Toplevel(self.master)
-            subroot.title('Carregar')
+            subroot.title('Salvar')
             subroot.geometry("200x150")
             subroot.protocol('WM_DELETE_WINDOW', subroot.destroy)
             tk.Button(subroot, text='Salvar CSV', command=_to_csv).pack(pady=10)
@@ -292,28 +292,23 @@ def convert_and_show(method):
 
 
 def save_box(moded):
-    def check_response():
+    def answer_yes():
         global _matrix_cache
-        user_response = resposta.get()
-        if user_response in ('sim', 's', 'Sim', 'S'):
-            _matrix_cache = moded
-            messagebox.showinfo("Info", "Imagem mantida no cache.")
-            subroot.destroy()
-        elif user_response in ('não', 'n', 'nao', 'Não', 'N', 'Nao'):
-            messagebox.showinfo("Info", "Imagem não será mantida no cache.")
-            subroot.destroy()
-        else:
-            messagebox.showinfo("Erro", "Resposta inválida!")
+        _matrix_cache = moded
+        messagebox.showinfo("Info", "Imagem mantida no cache.")
+        subroot.destroy()
+        
+    def answer_no():
+        messagebox.showinfo("Info", "Imagem não será mantida no cache.")
+        subroot.destroy()
 
     subroot = tk.Toplevel()
     subroot.title('Imagem')
     subroot.geometry("350x120")
     subroot.protocol('WM_DELETE_WINDOW', subroot.destroy)
     tk.Label(subroot, text=f'Gostaria de manter a imagem modificada no cache?').pack(pady=5)
-    resposta = tk.Entry(subroot)
-    resposta.pack(pady=5)
-    tk.Button(subroot, text='OK', command=check_response).pack(pady=5)
-
+    tk.Button(subroot, text='Sim', command=answer_yes).pack(pady=5)
+    tk.Button(subroot, text='Não', command=answer_no).pack(pady=5)
 
 # Limpa a variável global de cache
 def _clean_cache():
