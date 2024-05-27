@@ -22,28 +22,16 @@ def plot(data, metadata='Figure'):
 
 # Converte imagem para matrz e formata a matriz 3d resultante para ser salva em arquivo de texto
 def img_to_matrix(img):
-    # Converte imagem para matriz
     matrix = np.array(img)
-
-    # Obter as dimensões da imagem
     height, width = matrix.shape[:2]
-
-    # Criar um DataFrame vazio com a estrutura desejada
-    # Cada pixel será representado por uma string "R,G,B" ou "R,G,B,A"
     pixel_data = [['' for _ in range(width)] for _ in range(height)]
-
-    # Preencher o DataFrame com os valores RGB ou RGBA de cada pixel
     for i in range(height):
         for j in range(width):
-            # Obter o valor RGBA ou RGB do pixel
             pixel = matrix[i, j]
-            # Converter para string
             pixel_str = ','.join(map(str, pixel))
-            # Atribuir ao DataFrame
             pixel_data[i][j] = pixel_str
 
     return pixel_data
-
 
 # Converte matriz em imagem
 def matrix_to_img(matrix):
@@ -59,7 +47,6 @@ def matrix_to_img(matrix):
     
     return Image.fromarray(img_array)
 
-
 # Carrega uma imagem
 def load_img(path):
     try:
@@ -71,7 +58,6 @@ def load_img(path):
     messagebox.showinfo('Info', 'Imagem carregada com sucesso!')
     return img
 
-
 # Pega o valor de um pixel em uma matriz
 def get_pixel(matrix, x=0, y=0):
     # Verifica se está em formato de imagem do PIL
@@ -82,7 +68,6 @@ def get_pixel(matrix, x=0, y=0):
         return matrix[y][x]
     except Exception as e:
         messagebox.showerror('Erro', f'Valores informados estão incorretos\nErro: {e}')
-
 
 # Faz a análise do pixel e mostra sua respectiva cor
 def verify_color(pixel, metadata):
@@ -105,7 +90,6 @@ def verify_color(pixel, metadata):
 
     plot(color_matrix)
 
-
 # Pega uma nova cor
 def set_color():
     new_color = colorchooser.askcolor()
@@ -113,22 +97,16 @@ def set_color():
         new_color = ','.join(map(str, new_color[0]))
         return new_color
 
-
 # Modifica a cor de todos os pixel alvo
 def change_img_color(matrix, pixel, new_pixel):
     if 'PIL' in str(type(matrix)):
         matrix = img_to_matrix(matrix)
-
-    # Converte o valor do pixel de string para lista de inteiros
     pixel = list(map(int, pixel.split(',')))
     new_pixel = list(map(int, new_pixel.split(',')))
     if len(pixel) == 4:
         new_pixel.append(255)
-
-    # Converte o valor do pixel de lista de inteiros para string
     pixel = ','.join(map(str, pixel))
     new_pixel = ','.join(map(str, new_pixel))
-
     try:
         for i in range(len(matrix)):
             for j in range(len(matrix[0])):
@@ -136,7 +114,6 @@ def change_img_color(matrix, pixel, new_pixel):
                     matrix[i][j] = new_pixel
     except Exception as e:
         messagebox.showerror(f'Erro: {e}')
-
     return matrix_to_img(matrix)
 
 def rgb_or_rgba_para_cmyk(img, fundo=(0, 0, 0, 0)):
@@ -152,16 +129,13 @@ def rgb_or_rgba_para_cmyk(img, fundo=(0, 0, 0, 0)):
 
 def grayscale_avg(img):
     if img.mode == 'RGBA':
-        # Processar como RGBA
         img_array = np.array(img)
-        gray_array = img_array.mean(axis=2).astype(np.uint8)  # Usando média para conversão para cinza
-        # Cria uma nova imagem em escala de cinza com canal alfa
+        gray_array = img_array.mean(axis=2).astype(np.uint8) 
         final_img_array = np.zeros((*gray_array.shape, 2), dtype=np.uint8)
-        final_img_array[..., 0] = gray_array  # Canal de cinza
-        final_img_array[..., 1] = img_array[..., 3]  # Canal alfa
+        final_img_array[..., 0] = gray_array
+        final_img_array[..., 1] = img_array[..., 3]
         final_img = Image.fromarray(final_img_array, mode="LA")
     elif img.mode == 'RGB':
-        # Processar como RGB
         img_array = np.array(img)
         gray_array = img_array.mean(axis=2).astype(np.uint8)
         final_img = Image.fromarray(gray_array, mode="L")
@@ -174,16 +148,13 @@ def grayscale_avg(img):
 
 def grayscale_max(img):
     if img.mode == 'RGBA':
-        # Processar como RGBA
         img_array = np.array(img)
-        gray_array = img_array.max(axis=2)  # Usando mínimo para conversão para cinza
-        # Cria uma nova imagem em escala de cinza com canal alfa
+        gray_array = img_array.max(axis=2) 
         final_img_array = np.zeros((*gray_array.shape, 2), dtype=np.uint8)
-        final_img_array[..., 0] = gray_array  # Canal de cinza
-        final_img_array[..., 1] = img_array[..., 3]  # Canal alfa
+        final_img_array[..., 0] = gray_array
+        final_img_array[..., 1] = img_array[..., 3]
         final_img = Image.fromarray(final_img_array, mode="LA")
     elif img.mode == 'RGB':
-        # Processar como RGB
         img_array = np.array(img)
         gray_array = img_array.max(axis=2)
         final_img = Image.fromarray(gray_array, mode="L")
@@ -196,16 +167,13 @@ def grayscale_max(img):
 
 def grayscale_min(img):
     if img.mode == 'RGBA':
-        # Processar como RGBA
         img_array = np.array(img)
-        gray_array = img_array.min(axis=2)  # Usando mínimo para conversão para cinza
-        # Cria uma nova imagem em escala de cinza com canal alfa
+        gray_array = img_array.min(axis=2)
         final_img_array = np.zeros((*gray_array.shape, 2), dtype=np.uint8)
-        final_img_array[..., 0] = gray_array  # Canal de cinza
-        final_img_array[..., 1] = img_array[..., 3]  # Canal alfa
+        final_img_array[..., 0] = gray_array
+        final_img_array[..., 1] = img_array[..., 3]
         final_img = Image.fromarray(final_img_array, mode="LA")
     elif img.mode == 'RGB':
-        # Processar como RGB
         img_array = np.array(img)
         gray_array = img_array.min(axis=2)
         final_img = Image.fromarray(gray_array, mode="L")
@@ -218,16 +186,13 @@ def grayscale_min(img):
 
 def grayscale_luminosity(img):
     if img.mode == 'RGBA':
-        # Processar como RGBA
         img_array = np.array(img)
         gray_array = np.dot(img_array[..., :3], [0.299, 0.587, 0.114]).astype(np.uint8)
-        # Cria uma nova imagem em escala de cinza com canal alfa
         final_img_array = np.zeros((*gray_array.shape, 2), dtype=np.uint8)
-        final_img_array[..., 0] = gray_array  # Canal de cinza
-        final_img_array[..., 1] = img_array[..., 3]  # Canal alfa
+        final_img_array[..., 0] = gray_array
+        final_img_array[..., 1] = img_array[..., 3]
         final_img = Image.fromarray(final_img_array, mode="LA")
     elif img.mode == 'RGB':
-        # Processar como RGB
         img_array = np.array(img)
         gray_array = np.dot(img_array, [0.299, 0.587, 0.114]).astype(np.uint8)
         final_img = Image.fromarray(gray_array, mode="L")
@@ -240,7 +205,7 @@ def grayscale_luminosity(img):
 
 def aumentar_contraste(img):
     enhancer = ImageEnhance.Contrast(img)
-    enhanced_image = enhancer.enhance(2.0)  # Ajuste o fator para o nível desejado de contraste
+    enhanced_image = enhancer.enhance(2.0)
     return enhanced_image
 
 
@@ -249,7 +214,80 @@ def edge_filter(image):
     kernel = [1, 1, 1, 1, -7, 1, 1, 1, 1]
     return image.filter(ImageFilter.Kernel((3, 3), kernel))
 
-
 # Aplica filtro blur na imagem
 def blur_filter(image):
     return image.filter(ImageFilter.BLUR)
+
+def remove_red_channel(img):
+    if img.mode in ['RGB', 'RGBA']:
+        r, g, b, *a = img.split()
+        zero_channel = r.point(lambda _: 0)
+        if img.mode == 'RGBA':
+            return Image.merge('RGBA', (zero_channel, g, b, a[0]))
+        return Image.merge('RGB', (zero_channel, g, b))
+    else:
+        raise ValueError("A imagem não está no modo RGB ou RGBA")
+
+def remove_green_channel(img):
+    if img.mode in ['RGB', 'RGBA']:
+        r, g, b, *a = img.split()
+        zero_channel = g.point(lambda _: 0)
+        if img.mode == 'RGBA':
+            return Image.merge('RGBA', (r, zero_channel, b, a[0]))
+        return Image.merge('RGB', (r, zero_channel, b))
+    else:
+        raise ValueError("A imagem não está no modo RGB ou RGBA")
+
+def remove_blue_channel(img):
+    if img.mode in ['RGB', 'RGBA']:
+        r, g, b, *a = img.split()
+        zero_channel = b.point(lambda _: 0)
+        if img.mode == 'RGBA':
+            return Image.merge('RGBA', (r, g, zero_channel, a[0]))
+        return Image.merge('RGB', (r, g, zero_channel))
+    else:
+        raise ValueError("A imagem não está no modo RGB ou RGBA")
+
+def remove_alpha_channel(img):
+    if img.mode == 'RGBA':
+        r, g, b, a = img.split()
+        zero_channel = a.point(lambda _: 0)
+        return Image.merge('RGBA', (r, g, b, zero_channel))
+    else:
+        raise ValueError("A imagem não está no modo RGBA")
+
+# Função para remover o canal Ciano
+def remove_cyan_channel(img):
+    if img.mode == 'CMYK':
+        c, m, y, k = img.split()
+        zero_channel = c.point(lambda _: 0)
+        return Image.merge('CMYK', (zero_channel, m, y, k))
+    else:
+        raise ValueError("A imagem não está no modo CMYK")
+
+# Função para remover o canal Magenta
+def remove_magenta_channel(img):
+    if img.mode == 'CMYK':
+        c, m, y, k = img.split()
+        zero_channel = m.point(lambda _: 0)
+        return Image.merge('CMYK', (c, zero_channel, y, k))
+    else:
+        raise ValueError("A imagem não está no modo CMYK")
+
+# Função para remover o canal Amarelo
+def remove_yellow_channel(img):
+    if img.mode == 'CMYK':
+        c, m, y, k = img.split()
+        zero_channel = y.point(lambda _: 0)
+        return Image.merge('CMYK', (c, m, zero_channel, k))
+    else:
+        raise ValueError("A imagem não está no modo CMYK")
+
+# Função para remover o canal Preto
+def remove_black_channel(img):
+    if img.mode == 'CMYK':
+        c, m, y, k = img.split()
+        zero_channel = k.point(lambda _: 0)
+        return Image.merge('CMYK', (c, m, y, zero_channel))
+    else:
+        raise ValueError("A imagem não está no modo CMYK")

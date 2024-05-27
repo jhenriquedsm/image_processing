@@ -19,7 +19,6 @@ def matrix_to_excel(matrix):
         except Exception as e:
             messagebox.showerror('Erro', f'Erro ao escrever arquivo.\nErro: {e}')
 
-
 # Escreve matriz em um arquivo .csv
 def matrix_to_csv(matrix):
     path = filedialog.askdirectory()
@@ -32,7 +31,6 @@ def matrix_to_csv(matrix):
             messagebox.showinfo('Info', f'Arquivo Matrix-{dt.date.today()}-{time}.csv criado com sucesso!')
         except Exception as e:
             messagebox.showerror('Erro', f'Erro ao escrever arquivo.\nErro: {e}')
-
 
 # Lê arquivo de matriz em .xlsx ou .csv 
 def read_file(path):

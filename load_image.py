@@ -6,11 +6,9 @@ import matplotlib.pyplot as plt
 import manipula_arquivo as ma
 import manipula_img as mi
 
-
 # variável de cache
 _matrix_cache = None
 _img_metadata = {'name': None, 'size': None, 'mode': None}
-
 
 class menu:
     def __init__(self, master):
@@ -185,10 +183,200 @@ class menu:
             else:
                 messagebox.showinfo('Info', 'Nenhuma imagem foi carregada!')
 
-        if _matrix_cache != None:
+        def _color_channel_removal():
+            global _matrix_cache
+            if _matrix_cache is not None:
+                subroot2 = tk.Toplevel(subroot)
+                subroot2.title('Retirar canal de cor')
+                subroot2.geometry('200x300')
+                subroot2.protocol('WM_DELETE_WINDOW', subroot2.destroy)
+                if _matrix_cache.mode in ['RGB', 'RGBA']:
+                    tk.Button(subroot2, text='Remover canal vermelho', command=apply_remove_red).pack(pady=10)
+                    tk.Button(subroot2, text='Remover canal verde', command=apply_remove_green).pack(pady=10)
+                    tk.Button(subroot2, text='Remover canal azul', command=apply_remove_blue).pack(pady=10)
+                    if _matrix_cache.mode == 'RGBA':
+                        tk.Button(subroot2, text='Remover canal alfa', command=apply_remove_alpha).pack(pady=10)
+                elif _matrix_cache.mode == 'CMYK':
+                    tk.Button(subroot2, text='Remover canal ciano', command=apply_remove_cyan).pack(pady=10)
+                    tk.Button(subroot2, text='Remover canal magenta', command=apply_remove_magenta).pack(pady=10)
+                    tk.Button(subroot2, text='Remover canal amarelo', command=apply_remove_yellow).pack(pady=10)
+                    tk.Button(subroot2, text='Remover canal preto', command=apply_remove_black).pack(pady=10)
+                else:
+                    messagebox.showinfo('Info', 'Tipo de imagem não suportado!')
+            else:
+                messagebox.showinfo('Info', 'Nenhuma imagem foi carregada!')
+        def apply_remove_cyan():
+            global _matrix_cache
+            if _matrix_cache is not None:
+                try:
+                    mod_img = mi.remove_cyan_channel(_matrix_cache)
+                    plt.figure(figsize=(12, 6))
+                    plt.subplot(1, 2, 1)
+                    plt.imshow(_matrix_cache)
+                    plt.title('Original')
+                    plt.axis('off')
+                    plt.subplot(1, 2, 2)
+                    plt.imshow(mod_img)
+                    plt.title('Sem canal ciano')
+                    plt.axis('off')
+                    plt.show()
+                    save_box(mod_img)
+                except ValueError as e:
+                    messagebox.showerror('Erro', str(e))
+            else:
+                messagebox.showinfo('Info', 'Nenhuma imagem foi carregada!')
+
+        def apply_remove_magenta():
+            global _matrix_cache
+            if _matrix_cache is not None:
+                try:
+                    mod_img = mi.remove_magenta_channel(_matrix_cache)
+                    plt.figure(figsize=(12, 6))
+                    plt.subplot(1, 2, 1)
+                    plt.imshow(_matrix_cache)
+                    plt.title('Original')
+                    plt.axis('off')
+                    plt.subplot(1, 2, 2)
+                    plt.imshow(mod_img)
+                    plt.title('Sem canal magenta')
+                    plt.axis('off')
+                    plt.show()
+                    save_box(mod_img)
+                except ValueError as e:
+                    messagebox.showerror('Erro', str(e))
+            else:
+                messagebox.showinfo('Info', 'Nenhuma imagem foi carregada!')
+
+        def apply_remove_yellow():
+            global _matrix_cache
+            if (_matrix_cache is not None):
+                try:
+                    mod_img = mi.remove_yellow_channel(_matrix_cache)
+                    plt.figure(figsize=(12, 6))
+                    plt.subplot(1, 2, 1)
+                    plt.imshow(_matrix_cache)
+                    plt.title('Original')
+                    plt.axis('off')
+                    plt.subplot(1, 2, 2)
+                    plt.imshow(mod_img)
+                    plt.title('Sem canal amarelo')
+                    plt.axis('off')
+                    plt.show()
+                    save_box(mod_img)
+                except ValueError as e:
+                    messagebox.showerror('Erro', str(e))
+            else:
+                messagebox.showinfo('Info', 'Nenhuma imagem foi carregada!')
+
+        def apply_remove_black():
+            global _matrix_cache
+            if (_matrix_cache is not None):
+                try:
+                    mod_img = mi.remove_black_channel(_matrix_cache)
+                    plt.figure(figsize=(12, 6))
+                    plt.subplot(1, 2, 1)
+                    plt.imshow(_matrix_cache)
+                    plt.title('Original')
+                    plt.axis('off')
+                    plt.subplot(1, 2, 2)
+                    plt.imshow(mod_img)
+                    plt.title('Sem canal preto')
+                    plt.axis('off')
+                    plt.show()
+                    save_box(mod_img)
+                except ValueError as e:
+                    messagebox.showerror('Erro', str(e))
+            else:
+                messagebox.showinfo('Info', 'Nenhuma imagem foi carregada!')
+
+        def apply_remove_red():
+            global _matrix_cache
+            if _matrix_cache is not None:
+                try:
+                    mod_img = mi.remove_red_channel(_matrix_cache)
+                    plt.figure(figsize=(12, 6))
+                    plt.subplot(1, 2, 1)
+                    plt.imshow(_matrix_cache)
+                    plt.title('Original')
+                    plt.axis('off')
+                    plt.subplot(1, 2, 2)
+                    plt.imshow(mod_img)
+                    plt.title('Sem canal vermelho')
+                    plt.axis('off')
+                    plt.show()
+                    save_box(mod_img)
+                except ValueError as e:
+                    messagebox.showerror('Erro', str(e))
+            else:
+                messagebox.showinfo('Info', 'Nenhuma imagem foi carregada!')
+
+        def apply_remove_green():
+            global _matrix_cache
+            if _matrix_cache is not None:
+                try:
+                    mod_img = mi.remove_green_channel(_matrix_cache)
+                    plt.figure(figsize=(12, 6))
+                    plt.subplot(1, 2, 1)
+                    plt.imshow(_matrix_cache)
+                    plt.title('Original')
+                    plt.axis('off')
+                    plt.subplot(1, 2, 2)
+                    plt.imshow(mod_img)
+                    plt.title('Sem canal verde')
+                    plt.axis('off')
+                    plt.show()
+                    save_box(mod_img)
+                except ValueError as e:
+                    messagebox.showerror('Erro', str(e))
+            else:
+                messagebox.showinfo('Info', 'Nenhuma imagem foi carregada!')
+
+        def apply_remove_blue():
+            global _matrix_cache
+            if _matrix_cache is not None:
+                try:
+                    mod_img = mi.remove_blue_channel(_matrix_cache)
+                    plt.figure(figsize=(12, 6))
+                    plt.subplot(1, 2, 1)
+                    plt.imshow(_matrix_cache)
+                    plt.title('Original')
+                    plt.axis('off')
+                    plt.subplot(1, 2, 2)
+                    plt.imshow(mod_img)
+                    plt.title('Sem canal azul')
+                    plt.axis('off')
+                    plt.show()
+                    save_box(mod_img)
+                except ValueError as e:
+                    messagebox.showerror('Erro', str(e))
+            else:
+                messagebox.showinfo('Info', 'Nenhuma imagem foi carregada!')
+
+        def apply_remove_alpha():
+            global _matrix_cache
+            if _matrix_cache is not None:
+                try:
+                    mod_img = mi.remove_alpha_channel(_matrix_cache)
+                    plt.figure(figsize=(12, 6))
+                    plt.subplot(1, 2, 1)
+                    plt.imshow(_matrix_cache)
+                    plt.title('Original')
+                    plt.axis('off')
+                    plt.subplot(1, 2, 2)
+                    plt.imshow(mod_img)
+                    plt.title('Sem canal alfa')
+                    plt.axis('off')
+                    plt.show()
+                    save_box(mod_img)
+                except ValueError as e:
+                    messagebox.showerror('Erro', str(e))
+            else:
+                messagebox.showinfo('Info', 'Nenhuma imagem foi carregada!')
+
+        if _matrix_cache is not None:
             subroot = tk.Toplevel(self.master)
             subroot.title('Funções de Modificação')
-            subroot.geometry('200x250')
+            subroot.geometry('200x350')
             subroot.protocol('WM_DELETE_WINDOW', subroot.destroy)
 
             tk.Button(subroot, text='Visualizar pixel', command=_show_pixel).pack(pady=10)
@@ -196,6 +384,7 @@ class menu:
             tk.Button(subroot, text="Escala de Cinza", command=open_grayscale_menu).pack(pady=10)
             tk.Button(subroot, text="Aumentar contraste", command=aplicacao_contraste).pack(pady=10)
             tk.Button(subroot, text='Filtro convolucional', command=_filter).pack(pady=10)
+            tk.Button(subroot, text='Retirar canal de cor', command=_color_channel_removal).pack(pady=10)
         else:
             messagebox.showinfo('Info', 'Nenhuma imagem foi carregada!')
 
