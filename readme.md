@@ -28,7 +28,7 @@
 - ✅ Aplicação de uma função para aumentar o contraste no processamento da imagem colorida
 
 ## Etapa 8
-- ⌛ Implementação de filtros que retirem um ou mais canais de cor de uma imagem dependendo do sistema de cores que esteja sendo aplicado
+- ✅ Implementação de filtros que retirem um ou mais canais de cor de uma imagem dependendo do sistema de cores que esteja sendo aplicado
 
 ## Etapa 9
 - ✅ Implementação do filtro Blur mais qualquer outro filtro convolucional
